@@ -1,0 +1,14 @@
+LOLCODE 1.2 specifications follow. The original spec can be found here
+http://lolcode.com/specs/1.2#final-draft
+
+1.) Start/end of the program:
+    All LOLCODE programs must begin with HAI followed by the LOLCODE spec used
+    (fatso will try to be 1.2 compatible)
+    Similarly, the code should terminate with KTHXBYE
+
+2.) Comments
+    Single line comments in LOLCODE start with BTW
+    Multiline comments are contained within OBTW and TLDR
+
+3.) Variable Declarations
+    Untyped Variable declarations are done using I HAS A <varname>
