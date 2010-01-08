@@ -31,6 +31,8 @@ private:
     /* Get the current identifier. Also consume characters in the proceess */
     void update_current_identifier();
 
+    /* Consume one character */
+    void consume_char() { this->last_char = getchar(); }
 public:
     enum tokens {
         tok_eof           = -1, /* <EOF> */
@@ -61,7 +63,10 @@ int Lexer::get_token()
     
     /* Ignore whitespace */
     while(isspace(this->last_char)) 
-        this->last_char = getchar();
+        this->consume_char();
+
+    /* Track the last known ascii character before consuming the other chars */
+    int _char = this->last_char;
     update_current_identifier();        
     
     if (this->identifier == "HAI") return Lexer::tok_start_program;
@@ -71,7 +76,7 @@ int Lexer::get_token()
     if (this->identifier == "BTW") { 
         cout << "Got Comment" << endl;
         do
-            this->last_char = getchar();
+            this->consume_char();
         while (this->last_char != EOF && this->last_char != '\n' && this->last_char != '\r');
                 
         if (this->last_char != EOF) 
@@ -81,7 +86,7 @@ int Lexer::get_token()
     if (this->identifier == "OBTW") {
         cout << "Got multi-line comment" << endl;
         while(this->identifier != "TLDR") {
-            this->last_char = getchar();
+            this->consume_char();
             update_current_identifier();
         }
         cout << "TLDR reached" << endl;
@@ -93,7 +98,7 @@ int Lexer::get_token()
         return Lexer::tok_eof;
 
     /* Return the last character before consuming it */
-    return this->last_char;
+    return _char;
 }
 
 
