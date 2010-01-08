@@ -75,10 +75,8 @@ int Lexer::get_token()
     /* Single Line comment */
     if (this->identifier == "BTW") { 
         cout << "Got Comment" << endl;
-        do
+        while (this->last_char != EOF && this->last_char != '\n' && this->last_char != '\r')
             this->consume_char();
-        while (this->last_char != EOF && this->last_char != '\n' && this->last_char != '\r');
-                
         if (this->last_char != EOF) 
             return this->get_token();
     }
