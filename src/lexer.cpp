@@ -28,8 +28,9 @@ private:
     int last_char;
     std::string identifier; /* The current identifier */
     
-    /* Get the current identifier. Also consume characters in the proceess */
-    void update_current_identifier();
+    /* Consume the current identifier and get the next identifier.
+       Also consume characters in the proceess */
+    void get_next_identifier();
 
     /* Consume one character */
     void consume_char() { this->last_char = getchar(); }
@@ -46,7 +47,7 @@ public:
 
 
 /* Private methods follow */
-void Lexer::update_current_identifier()
+void Lexer::get_next_identifier()
 {
     this->identifier = "";
     if (isalpha(this->last_char))
@@ -67,11 +68,10 @@ int Lexer::get_token()
 
     /* Track the last known ascii character before consuming the other chars */
     int _char = this->last_char;
-    update_current_identifier();        
-    
+    get_next_identifier();
+
     if (this->identifier == "HAI") return Lexer::tok_start_program;
     if (this->identifier == "KTHXBYE") return Lexer::tok_end_program;
-                                                
     /* Single Line comment */
     if (this->identifier == "BTW") { 
         cout << "Got Comment" << endl;
@@ -85,7 +85,7 @@ int Lexer::get_token()
         cout << "Got multi-line comment" << endl;
         while(this->identifier != "TLDR") {
             this->consume_char();
-            update_current_identifier();
+            get_next_identifier();
         }
         cout << "TLDR reached" << endl;
         if (this->last_char != EOF)
