@@ -1,70 +1,72 @@
+/* 
+ *  lexer.cpp
+ *  Author: Sudharshan "Sup3rkiddo" sudharsh@gmail.com>
+ *  All Rights Reserved
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ */
+
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
 
 using namespace std;
 
-static std::string IdentifierStr;
-static double NumVal;
 
-/* All of this shamelessly copied from the kaleidescope
-   tutorial. Just building on top of that
-*/
-
-enum Token {
-    tok_eof = -1,
-
-    // Commands
-    tok_def = -2,
-    tok_extern = -3,
-
-    // primary
-    tok_identifier = -4,
-    tok_number = -5
+class Lexer
+{
+private:
+    int last_char;
+    std::string identifier; /* The current identifier */    
+public:
+    enum tokens {
+        tok_comment = -1,
+        tok_invalid = 0
+    };
+    
+    /* Given a stream of text. Get tokens */
+    int get_token();
 };
 
 
-int gettok() {
-    static int LastChar = ' ';
+int Lexer::get_token()
+{
+    this->last_char = ' ';
+    this->identifier = "";
+    
+    /* Ignore whitespace */
+    while(isspace(this->last_char))
+        this->last_char = getchar();
 
-    //Skip whitespace
-    while(isspace(LastChar))
-        LastChar = getchar();
+    if (isalpha(this->last_char))
+        do { 
+            this->identifier += this->last_char;
+        } while( isalnum((this->last_char = getchar())));
+    
+    cout << "this->identifier" << this->identifier << endl;
 
-    if (isalpha(LastChar)) {
-        IdentifierStr = LastChar;
-        while(isalnum((LastChar = getchar())))
-            IdentifierStr += LastChar;
-        if (IdentifierStr == "def") return tok_def;
-        if (IdentifierStr == "extern") return tok_extern;
-        return tok_identifier;
+    if (this->identifier == "BTW") {
+        cout << "Got Comment" << endl;
+        while(this->last_char != EOF && this->last_char != '\n' && this->last_char != '\r');
+        if (this->last_char != EOF) {
+            return this->get_token();
+        }
     }
-
-    if (isdigit(LastChar) || LastChar == '.') {
-        std::string NumStr;
-        do {
-            NumStr += LastChar;
-            LastChar = getchar();
-        } while (isdigit(LastChar) || LastChar == '.');
-
-        NumVal = strtod(NumStr.c_str(), 0);
-        return tok_number;
-    }
-
-    if (LastChar == '#') {
-        do
-            LastChar = getchar();
-        while(LastChar != EOF && LastChar != '\n' && LastChar != '\r');
-            if (LastChar != EOF)
-                return gettok();
-    }
-            
+    return Lexer::tok_invalid;
 }
 
 
 int main()
 {
-    std::string Identifier;
-    cout << gettok();
-    
+    Lexer *lexer = new Lexer();
+    cout << lexer->get_token();    
 }
