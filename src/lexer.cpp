@@ -39,6 +39,7 @@ public:
         tok_eof           = -1, /* <EOF> */
         tok_start_program = -2, /* HAI */
         tok_end_program   = -3, /* KTHXBYE */
+        tok_var_decl      = -4, /* I HAS A - Variable Declaration */
         tok_invalid       = 0
     };
     /* Given a stream of text. Get tokens */
@@ -72,6 +73,19 @@ int Lexer::get_token()
 
     if (this->identifier == "HAI") return Lexer::tok_start_program;
     if (this->identifier == "KTHXBYE") return Lexer::tok_end_program;
+
+    /* Variable declarations */
+    if (this->identifier == "I") {
+        std::string _tokens[] = { "HAS", "A" };
+        for (int i = 0; i < 2; i++) {
+            this->consume_char();
+            get_next_identifier();
+            if (this->identifier != _tokens[i])
+                return _char;
+        }
+        return Lexer::tok_var_decl;
+    }
+
     /* Single Line comment */
     if (this->identifier == "BTW") { 
         cout << "Got Comment" << endl;
