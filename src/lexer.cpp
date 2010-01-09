@@ -40,6 +40,7 @@ public:
         tok_start_program = -2, /* HAI */
         tok_end_program   = -3, /* KTHXBYE */
         tok_var_decl      = -4, /* I HAS A - Variable Declaration */
+        tok_number        = -5,
         tok_invalid       = 0
     };
     /* Given a stream of text. Get tokens */
@@ -104,6 +105,16 @@ int Lexer::get_token()
         cout << "TLDR reached" << endl;
         if (this->last_char != EOF)
             return this->get_token();
+    }
+
+    if (isdigit(this->last_char) || this->last_char == '.') {
+        std::string num_str;
+        do {
+            num_str += this->last_char;
+            this->last_char = getchar();
+        } while (isdigit(this->last_char) || this->last_char == '.');
+        num_str = strtod(num_str.c_str(), 0);
+        return Lexer::tok_number;
     }
 
     if (this->last_char == EOF)
