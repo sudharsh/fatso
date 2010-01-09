@@ -42,7 +42,7 @@ public:
         tok_start_program = -2, /* HAI */
         tok_end_program   = -3, /* KTHXBYE */
         tok_var_decl      = -4, /* I HAS A - Variable Declaration */
-        tok_number        = -5,
+        tok_number        = -5, /* <numbers> [0-9.]+ */
         tok_invalid       = 0
     };
     /* Given a stream of text. Get tokens */
