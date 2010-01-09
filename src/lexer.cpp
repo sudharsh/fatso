@@ -19,6 +19,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "config.h"
+
 using namespace std;
 
 
@@ -107,13 +109,16 @@ int Lexer::get_token()
             return this->get_token();
     }
 
-    if (isdigit(this->last_char) || this->last_char == '.') {
-        std::string num_str;
-        do {
-            num_str += this->last_char;
-            this->last_char = getchar();
-        } while (isdigit(this->last_char) || this->last_char == '.');
-        num_str = strtod(num_str.c_str(), 0);
+    if (isdigit(this->last_char)) {
+        bool seen_decimal = false;
+        while(isdigit(this->last_char) || this->last_char == '.') {
+            if (this->last_char == '.') {
+                if (seen_decimal)
+                    break;
+                seen_decimal = true;
+            }
+            this->consume_char();
+        }
         return Lexer::tok_number;
     }
 
