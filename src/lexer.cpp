@@ -38,12 +38,23 @@ private:
     void consume_char() { this->last_char = getchar(); }
 public:
     enum tokens {
+        /* General keywords */
         tok_eof           = -1, /* <EOF> */
         tok_start_program = -2, /* HAI */
         tok_end_program   = -3, /* KTHXBYE */
-        tok_var_decl      = -4, /* I HAS A - Variable Declaration */
-        tok_number        = -5, /* <numbers> [0-9.]+ */
-        tok_invalid       = 0
+        tok_exit          = -4, /* BYES */
+        tok_diaf          = -5, /* DIAF */
+        tok_end_block     = -6, /* KTHX */
+        tok_var_decl      = -7, /* I HAS A - Variable Declaration */
+        tok_number        = -8, /* <numbers> [0-9.]+ */
+        /* I/O tokens */
+        tok_visible       = -9,  /* VISBLE */
+        tok_gimmeh        = -10, /* GIMMEH */
+        /* Control flow/loop tokens */
+        tok_break         = -11, /* GTFO */
+        tok_conditional   = -12, /* IZ */
+        tok_loop_start    = -13,
+        tok_invalid       = -100
     };
     /* Given a stream of text. Get tokens */
     int get_token();
@@ -74,9 +85,17 @@ int Lexer::get_token()
     int _char = this->last_char;
     get_next_identifier();
 
+    /* We can probably use a hashmap and do a return map[k]. */
     if (this->identifier == "HAI") return Lexer::tok_start_program;
     if (this->identifier == "KTHXBYE") return Lexer::tok_end_program;
-
+    if (this->identifier == "BYES") return Lexer::tok_exit;
+    if (this->identifier == "DIAF") return Lexer::tok_diaf;
+    if (this->identifier == "KTHX") return Lexer::tok_end_block;
+    if (this->identifier == "VISIBLE") return Lexer::tok_visible;
+    if (this->identifier == "GIMMEH") return Lexer::tok_visible;
+    if (this->identifier == "GTFO") return Lexer::tok_visible;
+    if (this->identifier == "IZ") return Lexer::tok_visible;
+    
     /* Variable declarations */
     if (this->identifier == "I") {
         std::string _tokens[] = { "HAS", "A" };
@@ -109,6 +128,7 @@ int Lexer::get_token()
             return this->get_token();
     }
 
+    /* Very very wrong */
     if (isdigit(this->last_char)) {
         bool seen_decimal = false;
         while(isdigit(this->last_char) || this->last_char == '.') {
