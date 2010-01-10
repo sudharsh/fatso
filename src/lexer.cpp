@@ -53,7 +53,7 @@ public:
         /* Control flow/loop tokens */
         tok_break         = -11, /* GTFO */
         tok_conditional   = -12, /* IZ */
-        tok_loop_start    = -13,
+        tok_loop          = -13,
         tok_invalid       = -100
     };
     /* Given a stream of text. Get tokens */
@@ -96,9 +96,9 @@ int Lexer::get_token()
     if (this->identifier == "DIAF") return Lexer::tok_diaf;
     if (this->identifier == "KTHX") return Lexer::tok_end_block;
     if (this->identifier == "VISIBLE") return Lexer::tok_visible;
-    if (this->identifier == "GIMMEH") return Lexer::tok_visible;
-    if (this->identifier == "GTFO") return Lexer::tok_visible;
-    if (this->identifier == "IZ") return Lexer::tok_visible;
+    if (this->identifier == "GIMMEH") return Lexer::tok_gimmeh;
+    if (this->identifier == "GTFO") return Lexer::tok_break;
+    if (this->identifier == "IZ") return Lexer::tok_conditional;
     
     /* Variable declarations */
     if (this->identifier == "I") {
@@ -120,7 +120,7 @@ int Lexer::get_token()
             if (this->identifier != _tokens[i])
                 return _char;
         }
-        return Lexer::tok_var_decl;
+        return Lexer::tok_loop;
     }
 
     /* Single Line comment */
