@@ -23,7 +23,6 @@
 
 using namespace std;
 
-
 class Lexer
 {
 private:
@@ -104,6 +103,17 @@ int Lexer::get_token()
     /* Variable declarations */
     if (this->identifier == "I") {
         std::string _tokens[] = { "HAS", "A" };
+        for (int i = 0; i < 2; i++) {
+            this->consume_char();
+            get_next_identifier();
+            if (this->identifier != _tokens[i])
+                return _char;
+        }
+        return Lexer::tok_var_decl;
+    }
+
+    if (this->identifier == "IM") {
+        std::string _tokens[] = { "IN", "YR" };
         for (int i = 0; i < 2; i++) {
             this->consume_char();
             get_next_identifier();
