@@ -28,15 +28,16 @@ class Lexer
 {
 private:
     int last_char;
+    int lines;
     std::string identifier; /* The current identifier */
     
     /* Consume the current identifier and get the next identifier.
        Also consume characters in the proceess */
     void get_next_identifier();
-
     /* Consume one character */
     void consume_char() { this->last_char = getchar(); }
 public:
+    Lexer() : lines(1) { }
     enum tokens {
         /* General keywords */
         tok_eof           = -1, /* <EOF> */
@@ -58,6 +59,8 @@ public:
     };
     /* Given a stream of text. Get tokens */
     int get_token();
+    /* Return the number of lines (newlines '\n' and carriage feed '\r' */
+    int get_lines_count() { return this->lines; }
 };
 
 
@@ -78,9 +81,11 @@ int Lexer::get_token()
     this->last_char = ' ';
     
     /* Ignore whitespace */
-    while(isspace(this->last_char)) 
+    while(isspace(this->last_char)) {
+        if (this->last_char == '\n' || this->last_char == '\r')
+            this->lines++;
         this->consume_char();
-
+    }
     /* Track the last known ascii character before consuming the other chars */
     int _char = this->last_char;
     get_next_identifier();
@@ -141,7 +146,6 @@ int Lexer::get_token()
         }
         return Lexer::tok_number;
     }
-
     if (this->last_char == EOF)
         return Lexer::tok_eof;
 
