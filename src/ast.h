@@ -15,7 +15,8 @@
  *
  */
 
-/* Definition for Abstract Syntax Trees go in here */
+/* Definitions for Abstract Syntax Trees go in here. Of course copied from
+ LLVM kaleidescope code */
 
 #include <iostream>
 #include <cstdio>
