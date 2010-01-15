@@ -119,10 +119,3 @@ int Lexer::get_token()
     /* Return the last character before consuming it */
     return _char;
 }
-
-
-int main()
-{
-    Lexer *lexer = new Lexer();
-    cout << lexer->get_token();    
-}

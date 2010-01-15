@@ -1,5 +1,5 @@
 /* 
- *  ast.cpp
+ *  parser.h
  *  Author: Sudharshan "Sup3rkiddo" sudharsh@gmail.com>
  *  All Rights Reserved
  *
@@ -15,13 +15,13 @@
  *
  */
 
-/* Definitions for Abstract Syntax Trees go in here. Of course copied from
- LLVM kaleidescope code */
-
+/* AST node types follow */
 #include <iostream>
 #include <cstdio>
+#include "lexer.h"
 
 using namespace std;
+
 
 class ExprAST {
 public:
@@ -29,7 +29,7 @@ public:
 };
 
 
-class NumberExprAST : public ExprAST {
+class NumberExprAST: public ExprAST {
 private:
     double val;
 public:
@@ -52,8 +52,21 @@ private:
     ExprAST *LHS, *RHS;
 public:
     BinaryExprAST(char _op, ExprAST *_lhs, ExprAST *_rhs):
-        op(_op), LHS(_lhs), RHS(_rhs) {}
+                  op(_op), LHS(_lhs), RHS(_rhs) {}
 };
 
-/* Support function calls */
 
+class Parser
+{
+private:
+    Lexer *lexer;
+        
+public:
+    int current_token;
+    void getNextToken () {
+        this->current_token = this->lexer->get_token();
+    }
+    Parser() {
+        this->lexer = new Lexer();
+    }
+};
