@@ -88,7 +88,6 @@ int Lexer::get_token()
     /* Track the last known ascii character before consuming the other chars */
     int _char = this->last_char;
     get_next_identifier();
-
     /* We can probably use a hashmap and do a return map[k]. */
     if (this->identifier == "HAI") return Lexer::tok_start_program;
     if (this->identifier == "KTHXBYE") return Lexer::tok_end_program;
