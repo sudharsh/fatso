@@ -25,7 +25,7 @@ using namespace std;
 /* Private methods follow */
 void Parser::_handle_top_level()
 {
-    /* FIXME: getting lines count is still buggy */
+        /* FIXME: getting lines count is still buggy */
     if (this->current_token != this->lexer->tok_start_program) {
         this->error_message = "Parse error. Program should start with 'HAI'";
         this->error_occurred = true;
@@ -43,9 +43,13 @@ void Parser::_handle_variable_declaration()
 
 void Parser::_handle_end_program()
 {
-    return;
-}
+    this->getNextToken();
 
+    if (this->current_token != EOF) {
+        this->error_message = "Invalid Tokens after KTHXBYE";
+        this->error_occurred = true;
+    }   
+}
 
 
 /* Public methods follow */
@@ -62,12 +66,12 @@ std::string Parser::getCurrentLexeme(void) {
 
 void Parser::parse() {
     this->getNextToken();
+    if (this->current_token == EOF)
+        return;
+    
     this->_handle_top_level();
     
     while(true) {
-
-        if (this->error_occurred)
-            cout << this->error_message;
             
         this->getNextToken();
         switch(this->current_token)
@@ -78,7 +82,7 @@ void Parser::parse() {
         case Lexer::tok_end_program:
             cout << "Got end Program token" << endl;
             this->_handle_end_program();
-            return;
+            break;
             
         case Lexer::tok_number:
             /* Handle numbers */
@@ -90,6 +94,9 @@ void Parser::parse() {
         default:
             cout << "Token :" << this->current_token << endl;
         }
+
+        if (this->error_occurred)
+            cout << this->error_message << endl;
 
         /* Reset error flags */
         this->error_occurred = false;
