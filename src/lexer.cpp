@@ -33,6 +33,15 @@ void Lexer::get_next_identifier()
 
 
 /* Public methods follow */
+std::string Lexer::get_current_identifier() {
+    return this->identifier;
+}
+
+int Lexer::get_lines_count() {
+    return this->lines;
+}
+
+
 int Lexer::get_token()
 {
     this->last_char = ' ';

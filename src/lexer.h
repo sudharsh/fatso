@@ -58,6 +58,8 @@ public:
     };
     /* Given a stream of text. Get tokens */
     int get_token();
+    /* Get current lexeme. Note that this DOES NOT consume characters. */
+    std::string get_current_identifier();
     /* Return the number of lines (newlines '\n' and carriage feed '\r' */
-    int get_lines_count() { return this->lines; }
+    int get_lines_count();
 };

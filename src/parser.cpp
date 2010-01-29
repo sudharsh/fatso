@@ -20,14 +20,20 @@
 #include "parser.h"
 
 
-void Parser::getNextToken(void)
-{
+void Parser::getNextToken(void) {
     this->current_token = this->lexer->get_token();
+}
+
+
+std::string Parser::getCurrentLexeme(void) {
+    /* Too much abstraction? :D */
+    return this->lexer->get_current_identifier();
 }
 
 
 int main() {
     Parser *parser = new Parser();
     parser->getNextToken();
-    cout << "Current Token" << parser->current_token << endl;
+    cout << "Current Token " << parser->current_token <<
+        "Current Lexeme" << parser->getCurrentLexeme() << endl;
 }

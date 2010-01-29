@@ -63,7 +63,10 @@ private:
         
 public:
     int current_token;
-    void getNextToken(); 
+    void getNextToken();
+    std::string getCurrentLexeme();
+    void parse();
+    
     Parser() {
         this->lexer = new Lexer();
     }
