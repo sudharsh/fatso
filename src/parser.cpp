@@ -26,8 +26,17 @@ using namespace std;
 void Parser::_handle_top_level()
 {
     /* FIXME: getting lines count is still buggy */
-    if (this->current_token != this->lexer->tok_start_program)
-        fprintf(stderr, "%d: Parse error. Program should start with 'HAI'", this->lexer->get_lines_count());
+    if (this->current_token != this->lexer->tok_start_program) {
+        this->error_message = "Parse error. Program should start with 'HAI'";
+        this->error_occured = true;
+    }
+    
+}
+
+
+void Parser::_handle_end_program()
+{
+    return;
 }
 
 
@@ -46,10 +55,26 @@ std::string Parser::getCurrentLexeme(void) {
 
 void Parser::parse() {
     this->getNextToken();
-    switch(this->current_token)
-    {
-    default:
-        this->_handle_top_level();
+    this->_handle_top_level();
+    
+    while(true) {
+
+        if (this->error_occured)
+            cout << this->error_message;
+            
+        this->getNextToken();
+        switch(this->current_token)
+        {
+        case Lexer::tok_eof:
+            return;
+        case Lexer::tok_end_program:
+            cout << "Got end Program token" << endl;
+            this->_handle_end_program();
+            return;
+        case Lexer::tok_number:
+            /* Handle numbers */
+            break;
+        }
     }
 }
 

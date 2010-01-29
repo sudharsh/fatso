@@ -40,7 +40,7 @@ public:
 class VariableExprAST: public ExprAST {
 private:
     std::string name;
-    std::string type;
+    std::string type; /* FIXME: Not implemented yet */
 public:
     VariableExprAST(std::string _name): name(_name) {}
 };
@@ -60,9 +60,16 @@ class Parser
 {
 private:
     Lexer *lexer;
+
+    /* FIXME: Rudimentary error checking. Support for generic error handling
+       later on */
+    bool error_occured;
+    std::string error_message;
+    
     /* Handle each type of expression separately */
     void _handle_top_level();
-
+    void _handle_end_program();
+    
 public:
     int current_token;
     
@@ -72,5 +79,6 @@ public:
     
     Parser() {
         this->lexer = new Lexer();
+        this->error_occured = false;
     }
 };
