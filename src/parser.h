@@ -63,12 +63,13 @@ private:
 
     /* FIXME: Rudimentary error checking. Support for generic error handling
        later on */
-    bool error_occured;
+    bool error_occurred;
     std::string error_message;
     
     /* Handle each type of expression separately */
     void _handle_top_level();
     void _handle_end_program();
+    void _handle_variable_declaration();
     
 public:
     int current_token;
@@ -79,6 +80,6 @@ public:
     
     Parser() {
         this->lexer = new Lexer();
-        this->error_occured = false;
+        this->error_occurred = false;
     }
 };

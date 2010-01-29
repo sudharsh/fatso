@@ -28,9 +28,16 @@ void Parser::_handle_top_level()
     /* FIXME: getting lines count is still buggy */
     if (this->current_token != this->lexer->tok_start_program) {
         this->error_message = "Parse error. Program should start with 'HAI'";
-        this->error_occured = true;
+        this->error_occurred = true;
     }
     
+}
+
+
+void Parser::_handle_variable_declaration()
+{
+    this->getNextToken();
+    cout << "Variable name" << this->getCurrentLexeme();
 }
 
 
@@ -59,7 +66,7 @@ void Parser::parse() {
     
     while(true) {
 
-        if (this->error_occured)
+        if (this->error_occurred)
             cout << this->error_message;
             
         this->getNextToken();
@@ -67,14 +74,25 @@ void Parser::parse() {
         {
         case Lexer::tok_eof:
             return;
+            
         case Lexer::tok_end_program:
             cout << "Got end Program token" << endl;
             this->_handle_end_program();
             return;
+            
         case Lexer::tok_number:
             /* Handle numbers */
             break;
+            
+        case Lexer::tok_var_decl:
+            this->_handle_variable_declaration();
+            
+        default:
+            cout << "Token :" << this->current_token << endl;
         }
+
+        /* Reset error flags */
+        this->error_occurred = false;
     }
 }
 
