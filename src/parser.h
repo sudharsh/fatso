@@ -60,9 +60,12 @@ class Parser
 {
 private:
     Lexer *lexer;
-        
+    /* Handle each type of expression separately */
+    void _handle_top_level();
+
 public:
     int current_token;
+    
     void getNextToken();
     std::string getCurrentLexeme();
     void parse();

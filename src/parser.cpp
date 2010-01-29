@@ -19,7 +19,20 @@
 #include <cstdio>
 #include "parser.h"
 
+using namespace std;
 
+
+/* Private methods follow */
+void Parser::_handle_top_level()
+{
+    /* FIXME: getting lines count is still buggy */
+    if (this->current_token != this->lexer->tok_start_program)
+        fprintf(stderr, "%d: Parse error. Program should start with 'HAI'", this->lexer->get_lines_count());
+}
+
+
+
+/* Public methods follow */
 void Parser::getNextToken(void) {
     this->current_token = this->lexer->get_token();
 }
@@ -31,9 +44,19 @@ std::string Parser::getCurrentLexeme(void) {
 }
 
 
+void Parser::parse() {
+    this->getNextToken();
+    switch(this->current_token)
+    {
+    default:
+        this->_handle_top_level();
+    }
+}
+
+
 int main() {
     Parser *parser = new Parser();
-    parser->getNextToken();
+    parser->parse();
     cout << "Current Token " << parser->current_token <<
         "Current Lexeme" << parser->getCurrentLexeme() << endl;
 }
