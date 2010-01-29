@@ -63,9 +63,7 @@ private:
         
 public:
     int current_token;
-    void getNextToken () {
-        this->current_token = this->lexer->get_token();
-    }
+    void getNextToken(); 
     Parser() {
         this->lexer = new Lexer();
     }

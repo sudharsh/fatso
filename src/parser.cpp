@@ -20,11 +20,14 @@
 #include "parser.h"
 
 
+void Parser::getNextToken(void)
+{
+    this->current_token = this->lexer->get_token();
+}
+
+
 int main() {
     Parser *parser = new Parser();
     parser->getNextToken();
     cout << "Current Token" << parser->current_token << endl;
 }
-
-
-
