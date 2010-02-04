@@ -23,24 +23,6 @@ using namespace std;
 
 
 /* Private methods follow */
-void Parser::_handle_start_program()
-{
-    int tok = this->getNextToken();            
-    /* FIXME: getting lines count is still buggy */
-    if (tok != this->lexer->tok_start_program) {
-
-    }
-    
-}
-
-
-void Parser::_handle_variable_declaration()
-{
-    this->getNextToken();
-    cout << "Variable name" << this->getCurrentLexeme();
-}
-
-
 NumberExprAST * Parser::_handle_number()
 {
     double val = strtod(this->getCurrentLexeme().c_str(), NULL);

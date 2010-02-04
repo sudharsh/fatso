@@ -63,8 +63,6 @@ private:
     bool start_program; 
        
     /* Handle each type of expression separately */
-    void _handle_start_program();
-    void _handle_end_program();
     void _handle_variable_declaration();
     NumberExprAST *_handle_number();
     
