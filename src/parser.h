@@ -60,11 +60,6 @@ class Parser
 {
 private:
     Lexer *lexer;
-
-    /* FIXME: Rudimentary error checking. Support for generic error handling
-       later on */
-    bool error_occurred;
-    std::string error_message;
     
     /* Handle each type of expression separately */
     void _handle_top_level();
@@ -80,6 +75,5 @@ public:
     
     Parser() {
         this->lexer = new Lexer();
-        this->error_occurred = false;
     }
 };
