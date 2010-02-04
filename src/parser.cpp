@@ -41,18 +41,10 @@ void Parser::_handle_variable_declaration()
 }
 
 
-void Parser::_handle_end_program()
-{
-    int tok = this->getNextToken();
-    if (tok != EOF) 
-        throw "Invalid Tokens after KTHXBYE";
-   
-}
-
-
 NumberExprAST * Parser::_handle_number()
 {
-    cout << "Got number" << this->getCurrentLexeme();
+    double val = strtod(this->getCurrentLexeme().c_str(), NULL);
+    return new NumberExprAST(val);
 }
 
 
