@@ -23,11 +23,12 @@ using namespace std;
 
 
 /* Private methods follow */
-void Parser::_handle_top_level()
+void Parser::_handle_start_program()
 {
+    int tok = this->getNextToken();            
     /* FIXME: getting lines count is still buggy */
-    if (this->current_token != this->lexer->tok_start_program) {
-        cout << "Parse error. Program should start with 'HAI'. Got " << this->getCurrentLexeme();
+    if (tok != this->lexer->tok_start_program) {
+
     }
     
 }
@@ -42,70 +43,79 @@ void Parser::_handle_variable_declaration()
 
 void Parser::_handle_end_program()
 {
-    this->getNextToken();
-    if (this->current_token != EOF) 
+    int tok = this->getNextToken();
+    if (tok != EOF) 
         throw "Invalid Tokens after KTHXBYE";
    
 }
 
 
-/* Public methods follow */
-void Parser::getNextToken(void) {
-    this->current_token = this->lexer->get_token();
+NumberExprAST * Parser::_handle_number()
+{
+    cout << "Got number" << this->getCurrentLexeme();
 }
 
 
-std::string Parser::getCurrentLexeme(void) {
+/* Public methods follow */
+int Parser::getNextToken(void)
+{
+    /* Check if the program starts with tok_start_program
+       Ideally, this should have been the work of the Lexer.
+    */
+    if (this->start_program) {
+        int _first = this->lexer->get_token();
+        if (_first != Lexer::tok_start_program)
+            throw "Program should start with 'HAI'. Got " + this->getCurrentLexeme();
+        this->start_program = false;
+    }
+
+    /* All is well, consume the next token */
+    return this->lexer->get_token();
+}
+
+
+std::string Parser::getCurrentLexeme(void)
+{
     /* Too much abstraction? :D */
     return this->lexer->get_current_identifier();
 }
 
 
-void Parser::parse() {
-    this->getNextToken();
-    if (this->current_token == EOF)
-        return;
-    
-    this->_handle_top_level();
-    
-    while(true) {
-        try
+ExprAST* Parser::parse()
+{
+    try {
+        int tok = this->getNextToken();
+        switch(tok)
         {
-            this->getNextToken();
-            switch(this->current_token)
-                {
-                case Lexer::tok_eof:
-                    return;
-            
-                case Lexer::tok_end_program:
-                    cout << "Got end Program token" << endl;
-                    this->_handle_end_program();
-                    break;
-                    
-                case Lexer::tok_number:
-                    /* Handle numbers */
-                    break;
-                    
-                case Lexer::tok_var_decl:
-                    this->_handle_variable_declaration();
-                    
-                default:
-                    cout << "Token :" << this->current_token << endl;
-                }
-            
-            
-        }
-        catch(std::string traceback) {
-            cout << "Parser Error: " << traceback << endl;
-            continue;
+            case Lexer::tok_eof:
+                if (this->getCurrentLexeme() != "KTHXBYE")
+                    throw "Source program should end with KTHXBYE";
+                break;
+                
+            case Lexer::tok_end_program:
+                break; 
+                
+            case Lexer::tok_number:
+                /* Handle numbers */
+                return this->_handle_number();
+                
+            case Lexer::tok_var_decl:
+                this->_handle_variable_declaration();
+                
+            default:
+                cout << "Token :" << tok << endl;
         }
     }
+    catch(std::string traceback) {
+        cout << "Parser Error: " << traceback << endl;
+    }
+    return NULL;
+    
 }
 
 
 int main() {
     Parser *parser = new Parser();
-    parser->parse();
-    cout << "Current Token " << parser->current_token <<
-        "Current Lexeme" << parser->getCurrentLexeme() << endl;
+    while(parser->parse())
+        ;
 }

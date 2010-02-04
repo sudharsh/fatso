@@ -25,7 +25,7 @@ using namespace std;
 
 class ExprAST {
 public:
-    virtual ~ExprAST();
+    virtual ~ExprAST() {}
 };
 
 
@@ -60,20 +60,21 @@ class Parser
 {
 private:
     Lexer *lexer;
-    
+    bool start_program; 
+       
     /* Handle each type of expression separately */
-    void _handle_top_level();
+    void _handle_start_program();
     void _handle_end_program();
     void _handle_variable_declaration();
+    NumberExprAST *_handle_number();
     
 public:
-    int current_token;
-    
-    void getNextToken();
+    int getNextToken();
     std::string getCurrentLexeme();
-    void parse();
-    
-    Parser() {
+    ExprAST* parse();
+           
+    Parser ()  {
+        this->start_program = true;
         this->lexer = new Lexer();
     }
 };
