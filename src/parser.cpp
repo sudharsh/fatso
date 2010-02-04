@@ -25,10 +25,9 @@ using namespace std;
 /* Private methods follow */
 void Parser::_handle_top_level()
 {
-        /* FIXME: getting lines count is still buggy */
+    /* FIXME: getting lines count is still buggy */
     if (this->current_token != this->lexer->tok_start_program) {
-        this->error_message = "Parse error. Program should start with 'HAI'";
-        this->error_occurred = true;
+        cout << "Parse error. Program should start with 'HAI'. Got " << this->getCurrentLexeme();
     }
     
 }
@@ -44,11 +43,9 @@ void Parser::_handle_variable_declaration()
 void Parser::_handle_end_program()
 {
     this->getNextToken();
-
-    if (this->current_token != EOF) {
-        this->error_message = "Invalid Tokens after KTHXBYE";
-        this->error_occurred = true;
-    }   
+    if (this->current_token != EOF) 
+        throw "Invalid Tokens after KTHXBYE";
+   
 }
 
 
@@ -72,34 +69,36 @@ void Parser::parse() {
     this->_handle_top_level();
     
     while(true) {
-            
-        this->getNextToken();
-        switch(this->current_token)
+        try
         {
-        case Lexer::tok_eof:
-            return;
+            this->getNextToken();
+            switch(this->current_token)
+                {
+                case Lexer::tok_eof:
+                    return;
             
-        case Lexer::tok_end_program:
-            cout << "Got end Program token" << endl;
-            this->_handle_end_program();
-            break;
+                case Lexer::tok_end_program:
+                    cout << "Got end Program token" << endl;
+                    this->_handle_end_program();
+                    break;
+                    
+                case Lexer::tok_number:
+                    /* Handle numbers */
+                    break;
+                    
+                case Lexer::tok_var_decl:
+                    this->_handle_variable_declaration();
+                    
+                default:
+                    cout << "Token :" << this->current_token << endl;
+                }
             
-        case Lexer::tok_number:
-            /* Handle numbers */
-            break;
             
-        case Lexer::tok_var_decl:
-            this->_handle_variable_declaration();
-            
-        default:
-            cout << "Token :" << this->current_token << endl;
         }
-
-        if (this->error_occurred)
-            cout << this->error_message << endl;
-
-        /* Reset error flags */
-        this->error_occurred = false;
+        catch(std::string traceback) {
+            cout << "Parser Error: " << traceback << endl;
+            continue;
+        }
     }
 }
 
