@@ -30,6 +30,18 @@ NumberExprAST * Parser::_handle_number()
 }
 
 
+VariableExprAST * Parser::_handle_variable_declaration()
+{
+    /* Get the variable */
+    this->getNextToken();
+    std::string variable = this->getCurrentLexeme();
+    ExprAST *node = new VariableExprAST(variable);
+    this->symtab[variable.c_str()] = node;
+    return (VariableExprAST *)this->symtab[variable.c_str()];
+}
+
+
+
 /* Public methods follow */
 int Parser::getNextToken(void)
 {
@@ -74,7 +86,7 @@ ExprAST* Parser::parse()
                 return this->_handle_number();
                 
             case Lexer::tok_var_decl:
-                this->_handle_variable_declaration();
+                return this->_handle_variable_declaration();
                 
             default:
                 cout << "Token :" << tok << endl;

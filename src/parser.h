@@ -18,6 +18,7 @@
 /* AST node types follow */
 #include <iostream>
 #include <cstdio>
+#include <map>
 #include "lexer.h"
 
 using namespace std;
@@ -60,10 +61,11 @@ class Parser
 {
 private:
     Lexer *lexer;
-    bool start_program; 
+    bool start_program;
+    map<const char *, ExprAST *> symtab; /* Rudimentary symbol table */
        
     /* Handle each type of expression separately */
-    void _handle_variable_declaration();
+    VariableExprAST *_handle_variable_declaration();
     NumberExprAST *_handle_number();
     
 public:
