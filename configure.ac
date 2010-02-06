@@ -1,4 +1,4 @@
-AC_INIT([fatso], [0.1.0], [sudharsh@gmail.com], [fungi])
+AC_INIT([fatso], [0.1.0], [sudharsh@gmail.com], [fatsox])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([dist-bzip2])
@@ -8,11 +8,15 @@ AC_PROG_CXX
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
+LLVM_CFLAGS=`llvm-config --cxxflags`
+LLVM_LIBS=`llvm-config --ldflags`
 
-dnl define TRUE and FALSE
-FALSE=(0)
-AC_DEFINE_UNQUOTED(FALSE, $FALSE, [Boolean False])
-AC_DEFINE_UNQUOTED(TRUE, (!FALSE), [Boolean True]) 
+echo "LLVM CFLAGS: ${LLVM_CFLAGS}"
+echo "LLVM LIBS: ${LLVM_LIBS}"
+
+AC_SUBST(LLVM_CFLAGS)
+AC_SUBST(LLVM_LIBS)
+
 
 AC_OUTPUT([
 Makefile
