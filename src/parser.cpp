@@ -21,7 +21,6 @@
 
 using namespace std;
 
-
 /* Private methods follow */
 NumberExprAST * Parser::_handle_number()
 {

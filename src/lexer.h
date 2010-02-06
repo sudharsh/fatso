@@ -15,6 +15,9 @@
  *
  */
 
+#ifndef FATSO_LEXER_H
+#define FATSO_LEXER_H
+
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -63,3 +66,5 @@ public:
     /* Return the number of lines (newlines '\n' and carriage feed '\r' */
     int get_lines_count();
 };
+
+#endif

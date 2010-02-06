@@ -46,7 +46,7 @@ private:
     double val;
 public:
     NumberExprAST(double _val) : val(_val) {}
-    virtual Value *Codegen() {};
+    virtual Value *Codegen();
 };
 
 

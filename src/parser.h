@@ -15,59 +15,24 @@
  *
  */
 
-/* AST node types follow */
-#include <iostream>
-#include <cstdio>
-#include <map>
-#include "lexer.h"
+#ifndef FATSO_PARSER_H
+#define FATSO_PARSER_H
 
+#include "ast.h"
 
 using namespace std;
-
-
-
-class ExprAST {
-public:
-    virtual ~ExprAST() {}
-};
-
-
-class NumberExprAST: public ExprAST {
-private:
-    double val;
-public:
-    NumberExprAST(double _val) : val(_val) {}
-};
-
-
-class VariableExprAST: public ExprAST {
-private:
-    std::string name;
-    std::string type; /* FIXME: Not implemented yet */
-
-    ExprAST *value;
-public:
-    VariableExprAST(std::string _name): name(_name) {}
-    VariableExprAST(std::string _name, ExprAST *_value): value(_value), name(_name) {}
-};
-
-
-class BinaryExprAST: public ExprAST {
-private:
-    char op;
-    ExprAST *LHS, *RHS;
-public:
-    BinaryExprAST(char _op, ExprAST *_lhs, ExprAST *_rhs):
-                  op(_op), LHS(_lhs), RHS(_rhs) {}
-};
-
+using namespace llvm;
 
 class Parser
 {
 private:
     Lexer *lexer;
     bool start_program;
-    map<const char *, ExprAST *> symtab; /* Rudimentary symbol table */
+    map<const char *, ExprAST *> symtab; /* FIXME: Deprecated
+                                            Rudimentary symbol table */
+
+    Module *module;
+    IRBuilder<> Builder();
        
     /* Handle each type of expression separately */
     VariableExprAST *_handle_variable_declaration();
@@ -83,3 +48,5 @@ public:
         this->lexer = new Lexer();
     }
 };
+
+#endif
