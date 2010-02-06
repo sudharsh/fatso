@@ -25,6 +25,7 @@ using namespace std;
 /* Private methods follow */
 NumberExprAST * Parser::_handle_number()
 {
+    
     double val = strtod(this->getCurrentLexeme().c_str(), NULL);
     return new NumberExprAST(val);
 }

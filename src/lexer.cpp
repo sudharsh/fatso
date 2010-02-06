@@ -25,10 +25,11 @@ using namespace std;
 void Lexer::get_next_identifier()
 {
     this->identifier = "";
-    if (isalpha(this->last_char))
+    if (isalnum(this->last_char))
         do { 
             this->identifier += this->last_char;
-        } while( isalnum((this->last_char = getchar())));
+        } while( isalnum((this->last_char = getchar())) ||
+                 this->last_char == '.' ); /* For floating point numbers */
 }
 
 
@@ -109,18 +110,23 @@ int Lexer::get_token()
             return this->get_token();
     }
 
-    /* Very very wrong */
-    if (isdigit(this->last_char)) {
-        bool seen_decimal = false;
-        while(isdigit(this->last_char) || this->last_char == '.') {
-            if (this->last_char == '.') {
-                if (seen_decimal)
-                    break;
-                seen_decimal = true;
+    /* Very very wrong
+     FIXME: handle negative numbers */
+    if (isdigit(this->identifier[0]))
+    {
+        if (this->identifier.length() == 1)
+            return Lexer::tok_number;
+        
+        bool seen_decimal = false; /* handles cases like 12.3.3 */
+        for (int i = 1; i < this->identifier.length(); i++) {
+            if((isdigit(this->identifier[i]) || this->identifier[i] == '.'
+                || this->identifier[i] == 'E' || this->identifier[i] == 'e' )&& !seen_decimal)
+            {
+                if (identifier[i] == '.') { seen_decimal = true; }
+                if (i == this->identifier.length() - 1)
+                    return Lexer::tok_number;
             }
-            this->consume_char();
         }
-        return Lexer::tok_number;
     }
     if (this->last_char == EOF)
         return Lexer::tok_eof;
