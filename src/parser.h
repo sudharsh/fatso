@@ -21,7 +21,9 @@
 #include <map>
 #include "lexer.h"
 
+
 using namespace std;
+
 
 
 class ExprAST {
@@ -42,8 +44,11 @@ class VariableExprAST: public ExprAST {
 private:
     std::string name;
     std::string type; /* FIXME: Not implemented yet */
+
+    ExprAST *value;
 public:
     VariableExprAST(std::string _name): name(_name) {}
+    VariableExprAST(std::string _name, ExprAST *_value): value(_value), name(_name) {}
 };
 
 

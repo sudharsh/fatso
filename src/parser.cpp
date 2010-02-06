@@ -35,7 +35,21 @@ VariableExprAST * Parser::_handle_variable_declaration()
     /* Get the variable */
     this->getNextToken();
     std::string variable = this->getCurrentLexeme();
-    ExprAST *node = new VariableExprAST(variable);
+    VariableExprAST *node;
+
+    /* Check if the variable is defined in one go
+       eg, I HAS A VAR *ITZ 12*
+    */
+    this->getNextToken();
+    if (this->getCurrentLexeme() == "ITZ") {
+        ExprAST *value = this->parse();
+        if (!value) 
+            throw "Invalid type declaration";
+        node = new VariableExprAST(variable, value);
+    }
+    else
+        node = new VariableExprAST(variable);
+    
     this->symtab[variable.c_str()] = node;
     return (VariableExprAST *)this->symtab[variable.c_str()];
 }
