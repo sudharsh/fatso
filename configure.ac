@@ -9,7 +9,7 @@ AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
 LLVM_CFLAGS=`llvm-config --cxxflags`
-LLVM_LIBS=`llvm-config --libs`
+LLVM_LIBS="-lLLVMCore -lLLVMCodeGen -lLLVMSupport -lLLVMSystem"
 LLVM_LDFLAGS=`llvm-config --ldflags`
 
 echo "LLVM CFLAGS: ${LLVM_CFLAGS}"
