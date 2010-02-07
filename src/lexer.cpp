@@ -122,7 +122,6 @@ int Lexer::get_token()
             if((isdigit(this->identifier[i]) || this->identifier[i] == '.'
                 || this->identifier[i] == 'E' || this->identifier[i] == 'e' ))
             {
-                cout << this->identifier[i];
                 if (identifier[i] == '.') {
                     if (seen_decimal)
                         break;

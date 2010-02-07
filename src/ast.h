@@ -55,10 +55,12 @@ private:
     std::string name;
     std::string type; /* FIXME: Not implemented yet */
 
-    ExprAST *value;
+    ExprAST *value_ast;
 public:
+    ExprAST *getValueAST() { return this->value_ast; }
+        
     VariableExprAST(std::string _name): name(_name) {}
-    VariableExprAST(std::string _name, ExprAST *_value): value(_value), name(_name) {}
+    VariableExprAST(std::string _name, ExprAST *_value_ast): value_ast(_value_ast), name(_name) {}
     virtual Value *Codegen() {};
 };
 

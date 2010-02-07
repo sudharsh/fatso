@@ -28,7 +28,7 @@ class Parser
 private:
     Lexer *lexer;
     bool start_program;
-    map<const char *, ExprAST *> symtab; /* FIXME: Deprecated
+    map<const char *, Value *> symtab; /* FIXME: Deprecated
                                             Rudimentary symbol table */
 
     Module *module;

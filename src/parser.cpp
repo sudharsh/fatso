@@ -24,12 +24,8 @@ using namespace std;
 /* Private methods follow */
 NumberExprAST * Parser::_handle_number()
 {
-
-    cout << this->getCurrentLexeme();
     double val = strtod(this->getCurrentLexeme().c_str(), NULL);
     NumberExprAST *number_ast = new NumberExprAST(val);
-    Value *value = number_ast->Codegen();
-    value->dump();
     return number_ast;
 }
 
@@ -46,16 +42,18 @@ VariableExprAST * Parser::_handle_variable_declaration()
     */
     this->getNextToken();
     if (this->getCurrentLexeme() == "ITZ") {
-        ExprAST *value = this->parse();
-        if (!value) 
+        ExprAST *value_ast = this->parse();
+        if (!value_ast) 
             throw "Invalid type declaration";
-        node = new VariableExprAST(variable, value);
+        node = new VariableExprAST(variable, value_ast);
     }
     else
         node = new VariableExprAST(variable);
     
-    this->symtab[variable.c_str()] = node;
-    return (VariableExprAST *)this->symtab[variable.c_str()];
+    this->symtab[variable.c_str()] = node->getValueAST()->Codegen();
+    cout << variable << ":" << this->symtab[variable.c_str()];
+    this->symtab[variable.c_str()]->dump();
+    return node;
 }
 
 
