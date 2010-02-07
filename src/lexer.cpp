@@ -120,9 +120,14 @@ int Lexer::get_token()
         bool seen_decimal = false; /* handles cases like 12.3.3 */
         for (int i = 1; i < this->identifier.length(); i++) {
             if((isdigit(this->identifier[i]) || this->identifier[i] == '.'
-                || this->identifier[i] == 'E' || this->identifier[i] == 'e' )&& !seen_decimal)
+                || this->identifier[i] == 'E' || this->identifier[i] == 'e' ))
             {
-                if (identifier[i] == '.') { seen_decimal = true; }
+                cout << this->identifier[i];
+                if (identifier[i] == '.') {
+                    if (seen_decimal)
+                        break;
+                    seen_decimal = true;
+                }
                 if (i == this->identifier.length() - 1)
                     return Lexer::tok_number;
             }

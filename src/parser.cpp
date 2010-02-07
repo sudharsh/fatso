@@ -24,9 +24,13 @@ using namespace std;
 /* Private methods follow */
 NumberExprAST * Parser::_handle_number()
 {
-    
+
+    cout << this->getCurrentLexeme();
     double val = strtod(this->getCurrentLexeme().c_str(), NULL);
-    return new NumberExprAST(val);
+    NumberExprAST *number_ast = new NumberExprAST(val);
+    Value *value = number_ast->Codegen();
+    value->dump();
+    return number_ast;
 }
 
 
