@@ -46,13 +46,14 @@ VariableExprAST * Parser::_handle_variable_declaration()
         if (!value_ast) 
             throw "Invalid type declaration";
         node = new VariableExprAST(variable, value_ast);
+        this->symtab[variable.c_str()] = node->getValueAST()->Codegen();
+        cout << variable << ":" << this->symtab[variable.c_str()];
+        this->symtab[variable.c_str()]->dump();
     }
-    else
+    else {
         node = new VariableExprAST(variable);
-    
-    this->symtab[variable.c_str()] = node->getValueAST()->Codegen();
-    cout << variable << ":" << this->symtab[variable.c_str()];
-    this->symtab[variable.c_str()]->dump();
+        this->symtab[variable.c_str()] = NULL;
+    }
     return node;
 }
 
