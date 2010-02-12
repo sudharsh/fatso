@@ -28,7 +28,7 @@ class Parser
 private:
     Lexer *lexer;
     bool start_program;
-    map<const char *, ExprAST *> symtab; /* FIXME: Deprecated
+    map<std::string, ExprAST *> symtab; /* FIXME: Deprecated
                                             Rudimentary symbol table */
     Module *module;
     IRBuilder<> Builder();
@@ -39,7 +39,7 @@ private:
 
     ExprAST* _do_variable_assignment(std::string);
 
-    bool _check_symtab(const char *);
+    bool _check_symtab(std::string);
     
 public:
     int getNextToken();

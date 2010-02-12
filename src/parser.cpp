@@ -37,14 +37,14 @@ ExprAST* Parser::_do_variable_assignment(std::string variable_name)
     if (!value_ast) 
         throw "Invalid type declaration";
     
-    this->symtab[variable_name.c_str()] = value_ast;
+    this->symtab[variable_name] = value_ast;
     cout << variable_name << ":" << this->symtab[variable_name.c_str()] << endl;
-    this->symtab[variable_name.c_str()]->Codegen()->dump();
+    this->symtab[variable_name]->Codegen()->dump();
     return value_ast;
 }
 
 
-bool Parser::_check_symtab(const char * symbol) {
+bool Parser::_check_symtab(std::string symbol) {
     cout << "-----------" << endl;
     cout << "Symtab address in _check_symtab: " << &this->symtab << endl;
     cout << "Checking for " << symbol << " in the symtab, Count:" << this->symtab.count(symbol) << endl;
@@ -105,12 +105,12 @@ ExprAST* Parser::parse()
                 this->getNextToken();
                 var = this->getCurrentLexeme();
                 cout << "Declaring variable " << this->getCurrentLexeme() << endl;                                
-                if(this->_check_symtab((var + "|").c_str())) {
+                if(this->_check_symtab(var)) {
                     cout << "Re-assigning" << endl;
-                    delete this->symtab[(var + "|").c_str()] ;
+                    delete this->symtab[var] ;
                 }
                 
-                this->symtab[(var + "|").c_str()] = NULL;
+                this->symtab[var] = NULL;
                 cout << "Symtab size after declaring " << var.c_str() << " : " << this->symtab.size() << endl;
                     
                 return new VariableExprAST(var);
@@ -131,15 +131,15 @@ ExprAST* Parser::parse()
                 /* check if current lexeme is in the symtab
                    and do variable assignment if necessary
                 */
-                cout << "Size of Symtab: before _check_symtab call: " << this->symtab.count(lexeme.c_str()) << endl;
+                cout << "Size of Symtab: before _check_symtab call: " << this->symtab.size() << endl;
                 cout << "Address -->" << &this->symtab << endl;
                 cout << "Variables" << endl;
-                for(map<const char *, ExprAST *>::const_iterator it = this->symtab.begin();
+                for(map<std::string, ExprAST *>::const_iterator it = this->symtab.begin();
                     it != this->symtab.end();
                     ++it)
                     cout << it->first << endl;
                 
-                if(this->_check_symtab((lexeme + "|").c_str()))
+                if(this->_check_symtab(lexeme))
                     this->parse();
                 break;
 
