@@ -45,7 +45,11 @@ ExprAST* Parser::_do_variable_assignment(std::string variable_name)
 
 
 bool Parser::_check_symtab(const char * symbol) {
-    cout << "Checking for " << symbol << " " << this->symtab.count(symbol)<< endl;
+    cout << "-----------" << endl;
+    cout << "Symtab address in _check_symtab: " << &this->symtab << endl;
+    cout << "Checking for " << symbol << " in the symtab, Count:" << this->symtab.count(symbol) << endl;
+    cout << "Symtab size in _check_symtab: " << this->symtab.size() << endl;
+    cout << "-----------" << endl;
     if(this->symtab.count(symbol) >= 1) 
         return true;
     return false;
@@ -101,12 +105,14 @@ ExprAST* Parser::parse()
                 this->getNextToken();
                 var = this->getCurrentLexeme();
                 cout << "Declaring variable " << this->getCurrentLexeme() << endl;                                
-                if(this->_check_symtab(var.c_str())) {
+                if(this->_check_symtab((var + "|").c_str())) {
                     cout << "Re-assigning" << endl;
-                    delete this->symtab[var.c_str()];
+                    delete this->symtab[(var + "|").c_str()] ;
                 }
                 
-                this->symtab[var.c_str()] = NULL;
+                this->symtab[(var + "|").c_str()] = NULL;
+                cout << "Symtab size after declaring " << var.c_str() << " : " << this->symtab.size() << endl;
+                    
                 return new VariableExprAST(var);
 
                 
@@ -117,7 +123,6 @@ ExprAST* Parser::parse()
                 cout << "SymbolTable size: " << this->symtab.size() <<  endl;
                 var = this->lexer->unknown_identifiers.top();
                 this->lexer->unknown_identifiers.pop();
-                cout << "Checking " << var << endl;
                 return this->_do_variable_assignment(var);
                 
                 
@@ -126,7 +131,15 @@ ExprAST* Parser::parse()
                 /* check if current lexeme is in the symtab
                    and do variable assignment if necessary
                 */
-                if(this->_check_symtab(lexeme.c_str()))
+                cout << "Size of Symtab: before _check_symtab call: " << this->symtab.count(lexeme.c_str()) << endl;
+                cout << "Address -->" << &this->symtab << endl;
+                cout << "Variables" << endl;
+                for(map<const char *, ExprAST *>::const_iterator it = this->symtab.begin();
+                    it != this->symtab.end();
+                    ++it)
+                    cout << it->first << endl;
+                
+                if(this->_check_symtab((lexeme + "|").c_str()))
                     this->parse();
                 break;
 
