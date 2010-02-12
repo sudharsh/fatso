@@ -30,36 +30,27 @@ NumberExprAST * Parser::_handle_number()
 }
 
 
-VariableExprAST * Parser::_handle_variable_declaration()
-{
-    /* Get the variable */
-    this->getNextToken();
-    std::string variable = this->getCurrentLexeme();
-    VariableExprAST *node = new VariableExprAST(variable);
-
-    /* Check if the variable is defined in one go
-       eg, I HAS A VAR *ITZ 12*
-    */
-    cout << "Declaring " << variable.c_str() << endl;
-    this->symtab[variable.c_str()] = node;
-
-    cout << this->symtab[variable.c_str()] << endl;
-    return (VariableExprAST *)&this->symtab[variable.c_str()];
-}
-
-
 ExprAST* Parser::_do_variable_assignment(std::string variable_name)
 {
     /* Get the value and put it in the symbol table */
     ExprAST *value_ast = this->parse();
     if (!value_ast) 
         throw "Invalid type declaration";
+    
     this->symtab[variable_name.c_str()] = value_ast;
-    cout << variable_name << ":" << this->symtab[variable_name.c_str()];
+    cout << variable_name << ":" << this->symtab[variable_name.c_str()] << endl;
     this->symtab[variable_name.c_str()]->Codegen()->dump();
     return value_ast;
 }
 
+
+bool Parser::_check_symtab(const char * symbol) {
+    cout << "Checking for " << symbol << " " << this->symtab.count(symbol)<< endl;
+    if(this->symtab.count(symbol) >= 1) 
+        return true;
+    return false;
+}
+        
 
 /* Public methods follow */
 int Parser::getNextToken(void)
@@ -90,12 +81,12 @@ ExprAST* Parser::parse()
 {
     try {
         int tok = this->getNextToken();
-        string var;
+        cout << endl << "Parsing " << this->getCurrentLexeme() << endl;
+        std::string var;
+        
         switch(tok)
         {
             case Lexer::tok_eof:
-                if (this->getCurrentLexeme() != "KTHXBYE")
-                    throw "Source program should end with KTHXBYE";
                 break;
                 
             case Lexer::tok_end_program:
@@ -104,31 +95,45 @@ ExprAST* Parser::parse()
             case Lexer::tok_number:
                 /* Handle numbers */
                 return this->_handle_number();
+
                 
             case Lexer::tok_var_decl:
-                return this->_handle_variable_declaration();
+                this->getNextToken();
+                var = this->getCurrentLexeme();
+                cout << "Declaring variable " << this->getCurrentLexeme() << endl;                                
+                if(this->_check_symtab(var.c_str())) {
+                    cout << "Re-assigning" << endl;
+                    delete this->symtab[var.c_str()];
+                }
+                
+                this->symtab[var.c_str()] = NULL;
+                return new VariableExprAST(var);
 
+                
             case Lexer::tok_assignment:
                 /*
                   By this time VAR would gotten pushed to unknown_identifiers
                 */
+                cout << "SymbolTable size: " << this->symtab.size() <<  endl;
                 var = this->lexer->unknown_identifiers.top();
                 this->lexer->unknown_identifiers.pop();
                 cout << "Checking " << var << endl;
                 return this->_do_variable_assignment(var);
                 
+                
             default:
                 std::string lexeme = this->getCurrentLexeme();
-                map<const char *, ExprAST *>::iterator it = this->symtab.begin();
-                it = this->symtab.find(lexeme.c_str());
-                cout << this->symtab[lexeme.c_str()];
-                if(it != this->symtab.end()) {
+                /* check if current lexeme is in the symtab
+                   and do variable assignment if necessary
+                */
+                if(this->_check_symtab(lexeme.c_str()))
                     this->parse();
-                }
+                break;
 
-                cout << "Token :" << tok << endl;
-                cout << "Lexeme : d" << lexeme << endl;
         }
+        cout << "Last Token :" << tok << endl;
+        cout << "Last Lexeme :" << this->getCurrentLexeme() << endl;
+
     }
     catch(std::string traceback) {
         cout << "Parser Error: " << traceback << endl;
@@ -140,6 +145,8 @@ ExprAST* Parser::parse()
 
 int main() {
     Parser *parser = new Parser();
-    while(parser->parse())
-        ;
+    do
+        cout << "ready> " ;
+    while(parser->parse());
+        
 }

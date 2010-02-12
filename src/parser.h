@@ -38,6 +38,8 @@ private:
     NumberExprAST *_handle_number();
 
     ExprAST* _do_variable_assignment(std::string);
+
+    bool _check_symtab(const char *);
     
 public:
     int getNextToken();
