@@ -60,7 +60,6 @@ public:
     ExprAST *getValueAST() { return this->value_ast; }
         
     VariableExprAST(std::string _name): name(_name) {}
-    VariableExprAST(std::string _name, ExprAST *_value_ast): value_ast(_value_ast), name(_name) {}
     virtual Value *Codegen() {};
 };
 

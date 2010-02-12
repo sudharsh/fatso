@@ -21,6 +21,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <stack>
 
 #include "config.h"
 
@@ -57,6 +58,7 @@ public:
         tok_break         = -11, /* GTFO */
         tok_conditional   = -12, /* IZ */
         tok_loop          = -13,
+        tok_assignment    = -14, /* R || ITZ */
         tok_invalid       = -100
     };
     /* Given a stream of text. Get tokens */
@@ -65,6 +67,7 @@ public:
     std::string get_current_identifier();
     /* Return the number of lines (newlines '\n' and carriage feed '\r' */
     int get_lines_count();
+    stack<std::string> unknown_identifiers;
 };
 
 #endif

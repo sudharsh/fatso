@@ -28,15 +28,16 @@ class Parser
 private:
     Lexer *lexer;
     bool start_program;
-    map<const char *, Value *> symtab; /* FIXME: Deprecated
+    map<const char *, ExprAST *> symtab; /* FIXME: Deprecated
                                             Rudimentary symbol table */
-
     Module *module;
     IRBuilder<> Builder();
        
     /* Handle each type of expression separately */
     VariableExprAST *_handle_variable_declaration();
     NumberExprAST *_handle_number();
+
+    ExprAST* _do_variable_assignment(std::string);
     
 public:
     int getNextToken();

@@ -66,6 +66,7 @@ int Lexer::get_token()
     if (this->identifier == "GIMMEH") return Lexer::tok_gimmeh;
     if (this->identifier == "GTFO") return Lexer::tok_break;
     if (this->identifier == "IZ") return Lexer::tok_conditional;
+    if (this->identifier == "R" || this->identifier == "ITZ") return Lexer::tok_assignment;
     
     /* Variable declarations */
     if (this->identifier == "I") {
@@ -134,7 +135,8 @@ int Lexer::get_token()
     }
     if (this->last_char == EOF)
         return Lexer::tok_eof;
-
     /* Return the last character before consuming it */
+    
+    this->unknown_identifiers.push(this->identifier);
     return _char;
 }

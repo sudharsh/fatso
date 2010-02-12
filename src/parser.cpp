@@ -35,28 +35,30 @@ VariableExprAST * Parser::_handle_variable_declaration()
     /* Get the variable */
     this->getNextToken();
     std::string variable = this->getCurrentLexeme();
-    VariableExprAST *node;
+    VariableExprAST *node = new VariableExprAST(variable);
 
     /* Check if the variable is defined in one go
        eg, I HAS A VAR *ITZ 12*
     */
-    this->getNextToken();
-    if (this->getCurrentLexeme() == "ITZ") {
-        ExprAST *value_ast = this->parse();
-        if (!value_ast) 
-            throw "Invalid type declaration";
-        node = new VariableExprAST(variable, value_ast);
-        this->symtab[variable.c_str()] = node->getValueAST()->Codegen();
-        cout << variable << ":" << this->symtab[variable.c_str()];
-        this->symtab[variable.c_str()]->dump();
-    }
-    else {
-        node = new VariableExprAST(variable);
-        this->symtab[variable.c_str()] = NULL;
-    }
-    return node;
+    cout << "Declaring " << variable.c_str() << endl;
+    this->symtab[variable.c_str()] = node;
+
+    cout << this->symtab[variable.c_str()] << endl;
+    return (VariableExprAST *)&this->symtab[variable.c_str()];
 }
 
+
+ExprAST* Parser::_do_variable_assignment(std::string variable_name)
+{
+    /* Get the value and put it in the symbol table */
+    ExprAST *value_ast = this->parse();
+    if (!value_ast) 
+        throw "Invalid type declaration";
+    this->symtab[variable_name.c_str()] = value_ast;
+    cout << variable_name << ":" << this->symtab[variable_name.c_str()];
+    this->symtab[variable_name.c_str()]->Codegen()->dump();
+    return value_ast;
+}
 
 
 /* Public methods follow */
@@ -88,6 +90,7 @@ ExprAST* Parser::parse()
 {
     try {
         int tok = this->getNextToken();
+        string var;
         switch(tok)
         {
             case Lexer::tok_eof:
@@ -104,9 +107,27 @@ ExprAST* Parser::parse()
                 
             case Lexer::tok_var_decl:
                 return this->_handle_variable_declaration();
+
+            case Lexer::tok_assignment:
+                /*
+                  By this time VAR would gotten pushed to unknown_identifiers
+                */
+                var = this->lexer->unknown_identifiers.top();
+                this->lexer->unknown_identifiers.pop();
+                cout << "Checking " << var << endl;
+                return this->_do_variable_assignment(var);
                 
             default:
+                std::string lexeme = this->getCurrentLexeme();
+                map<const char *, ExprAST *>::iterator it = this->symtab.begin();
+                it = this->symtab.find(lexeme.c_str());
+                cout << this->symtab[lexeme.c_str()];
+                if(it != this->symtab.end()) {
+                    this->parse();
+                }
+
                 cout << "Token :" << tok << endl;
+                cout << "Lexeme : d" << lexeme << endl;
         }
     }
     catch(std::string traceback) {
