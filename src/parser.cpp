@@ -112,7 +112,6 @@ ExprAST* Parser::parse()
                 
                 this->symtab[var] = NULL;
                 cout << "Symtab size after declaring " << var.c_str() << " : " << this->symtab.size() << endl;
-                    
                 return new VariableExprAST(var);
 
                 
@@ -140,7 +139,7 @@ ExprAST* Parser::parse()
                     cout << it->first << endl;
                 
                 if(this->_check_symtab(lexeme))
-                    this->parse();
+                    return this->parse();
                 break;
 
         }
