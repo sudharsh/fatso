@@ -66,10 +66,10 @@ public:
 
 class BinaryExprAST: public ExprAST {
 private:
-    char op;
+    std::string op;
     ExprAST *LHS, *RHS;
 public:
-    BinaryExprAST(char _op, ExprAST *_lhs, ExprAST *_rhs):
+    BinaryExprAST(std::string _op, ExprAST *_lhs, ExprAST *_rhs):
     op(_op), LHS(_lhs), RHS(_rhs) {};
     virtual Value *Codegen() {};
 };
