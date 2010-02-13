@@ -44,6 +44,7 @@ private:
 public:
     int getNextToken();
     std::string getCurrentLexeme();
+
     ExprAST* parse();
            
     Parser ()  {

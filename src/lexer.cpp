@@ -43,6 +43,22 @@ int Lexer::get_lines_count() {
 }
 
 
+bool Lexer::is_binary_op(std::string lexeme)
+{
+    /* Just check the array, no algo contest
+       so I know its pretty dumb */
+
+    /* FIXME: Make this a instance variable */
+    std::string binops[] = { "SUM", "DIFF", "PRODUCT",
+                             "QUOSHUNT", "MOD"};
+    for(int i = 0; i < 5; i++)
+        if (lexeme == binops[i])
+            return true;
+    return false;
+}
+       
+
+
 int Lexer::get_token()
 {
     this->last_char = ' ';
@@ -133,6 +149,11 @@ int Lexer::get_token()
             }
         }
     }
+
+    /* Check if its binary operator */
+    if(is_binary_op(this->identifier))
+        return Lexer::tok_binop;
+    
     if (this->last_char == EOF)
         return Lexer::tok_eof;
     /* Return the last character before consuming it */

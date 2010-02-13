@@ -39,8 +39,8 @@ private:
     void get_next_identifier();
     /* Consume one character */
     void consume_char() { this->last_char = getchar(); }
+       
 public:
-    Lexer() : lines(1) { }
     enum tokens {
         /* General keywords */
         tok_eof           = -1, /* <EOF> */
@@ -59,6 +59,7 @@ public:
         tok_conditional   = -12, /* IZ */
         tok_loop          = -13,
         tok_assignment    = -14, /* R || ITZ */
+        tok_binop         = -15,
         tok_invalid       = -100
     };
     /* Given a stream of text. Get tokens */
@@ -67,6 +68,9 @@ public:
     std::string get_current_identifier();
     /* Return the number of lines (newlines '\n' and carriage feed '\r' */
     int get_lines_count();
+    /* Check if the lexeme is a binary operator */
+    bool is_binary_op(std::string lexeme);
+      
     stack<std::string> unknown_identifiers;
 };
 

@@ -87,6 +87,10 @@ ExprAST* Parser::parse()
         int tok = this->getNextToken();
         cout << endl << "Parsing " << this->getCurrentLexeme() << endl;
         std::string var;
+
+        /* For binops */
+        std::string lhs, rhs;
+        std::string binary_op;
         
         switch(tok)
         {
@@ -123,6 +127,33 @@ ExprAST* Parser::parse()
                 var = this->lexer->unknown_identifiers.top();
                 this->lexer->unknown_identifiers.pop();
                 return this->_do_variable_assignment(var);
+
+
+            case Lexer::tok_binop:
+                binary_op = getCurrentLexeme();
+                ExprAST *LHS, *RHS;
+                this->getNextToken(); /* Consume 'OF' */
+                if(this->getCurrentLexeme() != "OF") 
+                    throw "Invalid BinOp statement. Expected OF";
+                
+                /* Get LHS */
+                this->getNextToken();
+                lhs = this->getCurrentLexeme();
+                if(!_check_symtab(lhs))
+                    throw "Invalid LHS variable: " + lhs;
+                LHS = this->symtab[lhs];
+                
+                this->getNextToken(); /* Consume 'AN' */
+                if(this->getCurrentLexeme() != "AN") 
+                    throw "Invalid BinOp statement. Expected AN";
+                
+                /* Get RHS */
+                this->getNextToken();
+                rhs = this->getCurrentLexeme();
+                if(!_check_symtab(rhs))
+                    throw "Invalid RHS variable: " + rhs;
+                RHS = this->symtab[rhs];
+                return new BinaryExprAST(binary_op, LHS, RHS);
                 
                 
             default:
