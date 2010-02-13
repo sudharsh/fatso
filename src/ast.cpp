@@ -18,13 +18,36 @@
 /* Definition for Abstract Syntax Trees go in here */
 /* AST node types follow */
 
+#include "llvm/DerivedTypes.h"
 #include "llvm/LLVMContext.h"
+#include "llvm/Module.h"
+#include "llvm/LLVMContext.h"
+#include "llvm/Support/IRBuilder.h"
 #include "ast.h"
+#include "parser.h"
 
 using namespace std;
 using namespace llvm;
 
+static IRBuilder<> Builder(getGlobalContext());
+
 
 Value *NumberExprAST::Codegen() {
     return ConstantFP::get(getGlobalContext(), APFloat(val));
+}
+
+
+Value *BinaryExprAST::Codegen() {
+    Value *L = LHS->Codegen();
+    Value *R = RHS->Codegen();
+    if (L == 0 || R == 0) return 0;
+    
+    if (op == "SUM") return Builder.CreateAdd(L, R, "addtmp");
+    if (op == "DIFF") return Builder.CreateSub(L, R, "subtmp");
+    if (op == "PRODUCT") return Builder.CreateMul(L, R, "multmp");
+    if (op == "QUOSHUNT") return Builder.CreateFDiv(L, R, "divtmp");
+    if (op == "MOD") return Builder.CreateFDiv(L, R, "divtmp");
+    
+    throw "Invalid Binary Operator";
+  
 }

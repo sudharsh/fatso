@@ -132,6 +132,8 @@ ExprAST* Parser::parse()
             case Lexer::tok_binop:
                 binary_op = getCurrentLexeme();
                 ExprAST *LHS, *RHS;
+                BinaryExprAST *binop;
+                
                 this->getNextToken(); /* Consume 'OF' */
                 if(this->getCurrentLexeme() != "OF") 
                     throw "Invalid BinOp statement. Expected OF";
@@ -153,7 +155,9 @@ ExprAST* Parser::parse()
                 if(!_check_symtab(rhs))
                     throw "Invalid RHS variable: " + rhs;
                 RHS = this->symtab[rhs];
-                return new BinaryExprAST(binary_op, LHS, RHS);
+                binop = new BinaryExprAST(binary_op, LHS, RHS);
+                binop->Codegen()->dump();
+                return binop;
                 
                 
             default:

@@ -71,7 +71,7 @@ private:
 public:
     BinaryExprAST(std::string _op, ExprAST *_lhs, ExprAST *_rhs):
     op(_op), LHS(_lhs), RHS(_rhs) {};
-    virtual Value *Codegen() {};
+    virtual Value *Codegen();
 };
 
 
