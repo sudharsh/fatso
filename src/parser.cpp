@@ -83,8 +83,11 @@ std::string Parser::getCurrentLexeme(void)
 
 ExprAST* Parser::parse()
 {
+    cout << "ready> ";
+
     try {
         int tok = this->getNextToken();
+
         cout << endl << "Parsing " << this->getCurrentLexeme() << endl;
         std::string var;
 
@@ -191,9 +194,12 @@ ExprAST* Parser::parse()
 
 
 int main() {
+    LLVMContext &Context = getGlobalContext();
     Parser *parser = new Parser();
-    do
-        cout << "ready> " ;
-    while(parser->parse());
-        
+    parser->module = new Module("FATSO JIT", Context);
+    while(parser->parse())
+        ;
+
+    parser->module->dump();
+    return 0;
 }

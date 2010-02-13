@@ -50,7 +50,8 @@ bool Lexer::is_binary_op(std::string lexeme)
 
     /* FIXME: Make this a instance variable */
     std::string binops[] = { "SUM", "DIFF", "PRODUCT",
-                             "QUOSHUNT", "MOD"};
+                             "QUOSHUNT", "MOD",
+                             "BIGGR", "SMALLR" };
     for(int i = 0; i < 5; i++)
         if (lexeme == binops[i])
             return true;

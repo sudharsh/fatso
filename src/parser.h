@@ -30,8 +30,6 @@ private:
     bool start_program;
     map<std::string, ExprAST *> symtab; /* FIXME: Deprecated
                                             Rudimentary symbol table */
-    Module *module;
-       
     /* Handle each type of expression separately */
     VariableExprAST *_handle_variable_declaration();
     NumberExprAST *_handle_number();
@@ -40,6 +38,8 @@ private:
     bool _check_symtab(std::string);
     
 public:
+    Module *module;
+       
     int getNextToken();
     std::string getCurrentLexeme();
 

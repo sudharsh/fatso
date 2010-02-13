@@ -45,6 +45,7 @@ class NumberExprAST: public ExprAST {
 private:
     double val;
 public:
+    double get_val() { return this->val; }
     NumberExprAST(double _val) : val(_val) {}
     virtual Value *Codegen();
 };
