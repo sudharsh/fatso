@@ -50,3 +50,9 @@ Value *BinaryExprAST::Codegen() {
     throw "Invalid Binary Operator";
   
 }
+
+
+Value *VariableExprAST::Codegen() {
+    /* Check the symbol table */
+    return this->getValue();
+}

@@ -28,20 +28,20 @@ class Parser
 private:
     Lexer *lexer;
     bool start_program;
-    map<std::string, ExprAST *> symtab; /* FIXME: Deprecated
+    map<std::string, VariableExprAST *> symtab; /* FIXME: Deprecated
                                             Rudimentary symbol table */
     /* Handle each type of expression separately */
     VariableExprAST *_handle_variable_declaration();
     NumberExprAST *_handle_number();
 
     ExprAST* _do_variable_assignment(std::string);
-    bool _check_symtab(std::string);
-    
+        
 public:
     Module *module;
        
     int getNextToken();
     std::string getCurrentLexeme();
+    ExprAST* check_symtab(std::string);
 
     ExprAST* parse();
            

@@ -17,9 +17,17 @@
 
 #include <iostream>
 #include <cstdio>
+
+#include <llvm/Support/TypeBuilder.h>
+
 #include "parser.h"
 
 using namespace std;
+using namespace llvm;
+
+
+static IRBuilder<> Builder(getGlobalContext());
+
 
 /* Private methods follow */
 NumberExprAST * Parser::_handle_number()
@@ -37,22 +45,22 @@ ExprAST* Parser::_do_variable_assignment(std::string variable_name)
     if (!value_ast) 
         throw "Invalid type declaration";
     
-    this->symtab[variable_name] = value_ast;
+    this->symtab[variable_name]->value_ast = value_ast;
     cout << variable_name << ":" << this->symtab[variable_name.c_str()] << endl;
     this->symtab[variable_name]->Codegen()->dump();
     return value_ast;
 }
 
 
-bool Parser::_check_symtab(std::string symbol) {
+ExprAST* Parser::check_symtab(std::string symbol) {
     cout << "-----------" << endl;
-    cout << "Symtab address in _check_symtab: " << &this->symtab << endl;
+    cout << "Symtab address in check_symtab: " << &this->symtab << endl;
     cout << "Checking for " << symbol << " in the symtab, Count:" << this->symtab.count(symbol) << endl;
-    cout << "Symtab size in _check_symtab: " << this->symtab.size() << endl;
+    cout << "Symtab size in check_symtab: " << this->symtab.size() << endl;
     cout << "-----------" << endl;
     if(this->symtab.count(symbol) >= 1) 
-        return true;
-    return false;
+        return this->symtab[symbol];
+    return NULL;
 }
         
 
@@ -112,14 +120,14 @@ ExprAST* Parser::parse()
                 this->getNextToken();
                 var = this->getCurrentLexeme();
                 cout << "Declaring variable " << this->getCurrentLexeme() << endl;                                
-                if(this->_check_symtab(var)) {
+                if(this->check_symtab(var)) {
                     cout << "Re-assigning" << endl;
                     delete this->symtab[var] ;
                 }
                 
-                this->symtab[var] = NULL;
+                this->symtab[var] = new VariableExprAST(var);
                 cout << "Symtab size after declaring " << var.c_str() << " : " << this->symtab.size() << endl;
-                return new VariableExprAST(var);
+                return this->symtab[var];
 
                 
             case Lexer::tok_assignment:
@@ -144,7 +152,7 @@ ExprAST* Parser::parse()
                 /* Get LHS */
                 this->getNextToken();
                 lhs = this->getCurrentLexeme();
-                if(!_check_symtab(lhs))
+                if(!check_symtab(lhs))
                     throw "Invalid LHS variable: " + lhs;
                 LHS = this->symtab[lhs];
                 
@@ -155,7 +163,7 @@ ExprAST* Parser::parse()
                 /* Get RHS */
                 this->getNextToken();
                 rhs = this->getCurrentLexeme();
-                if(!_check_symtab(rhs))
+                if(!check_symtab(rhs))
                     throw "Invalid RHS variable: " + rhs;
                 RHS = this->symtab[rhs];
                 binop = new BinaryExprAST(binary_op, LHS, RHS);
@@ -168,15 +176,15 @@ ExprAST* Parser::parse()
                 /* check if current lexeme is in the symtab
                    and do variable assignment if necessary
                 */
-                cout << "Size of Symtab: before _check_symtab call: " << this->symtab.size() << endl;
+                cout << "Size of Symtab: before check_symtab call: " << this->symtab.size() << endl;
                 cout << "Address -->" << &this->symtab << endl;
                 cout << "Variables" << endl;
-                for(map<std::string, ExprAST *>::const_iterator it = this->symtab.begin();
+                for(map<std::string, VariableExprAST *>::const_iterator it = this->symtab.begin();
                     it != this->symtab.end();
                     ++it)
                     cout << it->first << endl;
                 
-                if(this->_check_symtab(lexeme))
+                if(this->check_symtab(lexeme))
                     return this->parse();
                 break;
 
@@ -197,8 +205,23 @@ int main() {
     LLVMContext &Context = getGlobalContext();
     Parser *parser = new Parser();
     parser->module = new Module("FATSO JIT", Context);
-    while(parser->parse())
-        ;
+
+    /* The main() for LOLCODE
+     */
+
+    /* Create the top level interpreter function to call as entry */
+    
+    FunctionType *ftype = FunctionType::get(Type::getVoidTy(Context), false);
+    Function *mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", parser->module);
+    BasicBlock *bblock = BasicBlock::Create(Context, "__maino", mainFunction, 0);
+    Builder.SetInsertPoint(bblock);
+    
+    while(ExprAST *ast = parser->parse())
+    {
+        //Builder.CreateRet(ast->Codegen());
+        //BasicBlock *BB = BasicBlock::Create(Context, "entry", ast->Codegen(), 0);
+        //Builder.SetInsertPoint(BB);
+    }
 
     parser->module->dump();
     return 0;

@@ -56,12 +56,13 @@ private:
     std::string name;
     std::string type; /* FIXME: Not implemented yet */
 
-    ExprAST *value_ast;
+
 public:
-    ExprAST *getValueAST() { return this->value_ast; }
+    ExprAST *value_ast;
+    Value *getValue() { return this->value_ast->Codegen(); }
         
     VariableExprAST(std::string _name): name(_name) {}
-    virtual Value *Codegen() {};
+    virtual Value *Codegen();
 };
 
 
@@ -74,6 +75,18 @@ public:
     op(_op), LHS(_lhs), RHS(_rhs) {};
     virtual Value *Codegen();
 };
+ 
+
+/* Main Function AST, hold the others.
+   since there is no concept of functions.
+   Think of this as a root node of the syntax tree
+*/
+class MainFunction {
+private:
+    ExprAST *body;
+public:
+    Function *Codegen();
+};    
 
 
 #endif
