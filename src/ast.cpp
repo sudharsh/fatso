@@ -54,7 +54,7 @@ Value *BinaryExprAST::Codegen() {
 
 Value *VoidExprAST::Codegen() {
     // FIXME: This should return a true Void ast type
-    return new NumberExprAST(0);
+    return new NumberExprAST(0)->Codegen();
 }
 
 
