@@ -19,5 +19,6 @@ fatso_SOURCES = \
 	parser.cpp \
 	ast.h \
 	ast.cpp \
+	ir.cpp \
 	$(NULL)
 

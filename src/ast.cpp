@@ -29,7 +29,7 @@
 using namespace std;
 using namespace llvm;
 
-static IRBuilder<> Builder(getGlobalContext());
+IRBuilder<> Builder(getGlobalContext());
 
 
 Value *NumberExprAST::Codegen() {
@@ -54,7 +54,8 @@ Value *BinaryExprAST::Codegen() {
 
 Value *VoidExprAST::Codegen() {
     // FIXME: This should return a true Void ast type
-    return new NumberExprAST(0)->Codegen();
+    NumberExprAST *ast = new NumberExprAST(0);
+    return ast->Codegen();
 }
 
 

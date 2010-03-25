@@ -18,15 +18,11 @@
 #include <iostream>
 #include <cstdio>
 
-#include <llvm/Support/TypeBuilder.h>
-
 #include "parser.h"
+
 
 using namespace std;
 using namespace llvm;
-
-
-static IRBuilder<> Builder(getGlobalContext());
 
 
 /* Private methods follow */
@@ -126,6 +122,7 @@ ExprAST* Parser::parse()
                 }
                 
                 this->symtab[var] = new VariableExprAST(var);
+                this->symtab[var]->value_ast = new VoidExprAST(); 
                 cout << "Symtab size after declaring " << var.c_str() << " : " << this->symtab.size() << endl;
                 return this->symtab[var];
 
@@ -198,31 +195,4 @@ ExprAST* Parser::parse()
     }
     return NULL;
     
-}
-
-
-int main() {
-    LLVMContext &Context = getGlobalContext();
-    Parser *parser = new Parser();
-    parser->module = new Module("FATSO JIT", Context);
-
-    /* The main() for LOLCODE
-     */
-
-    /* Create the top level interpreter function to call as entry */
-    
-    FunctionType *ftype = FunctionType::get(Type::getVoidTy(Context), false);
-    Function *mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", parser->module);
-    BasicBlock *bblock = BasicBlock::Create(Context, "__maino", mainFunction, 0);
-    Builder.SetInsertPoint(bblock);
-    
-    while(ExprAST *ast = parser->parse())
-    {
-        //Builder.CreateRet(ast->Codegen());
-        //BasicBlock *BB = BasicBlock::Create(Context, "entry", ast->Codegen(), 0);
-        //Builder.SetInsertPoint(BB);
-    }
-
-    parser->module->dump();
-    return 0;
 }

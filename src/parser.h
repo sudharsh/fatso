@@ -18,6 +18,11 @@
 #ifndef FATSO_PARSER_H
 #define FATSO_PARSER_H
 
+#include <llvm/Support/TypeBuilder.h>
+#include <llvm/ADT/ilist.h>
+#include <llvm/Instruction.h>
+#include <llvm/Support/IRBuilder.h>
+
 #include "ast.h"
 
 using namespace std;
