@@ -52,6 +52,12 @@ Value *BinaryExprAST::Codegen() {
 }
 
 
+Value *VoidExprAST::Codegen() {
+    // FIXME: This should return a true Void ast type
+    return new NumberExprAST(0);
+}
+
+
 Value *VariableExprAST::Codegen() {
     /* Check the symbol table */
     return this->getValue();

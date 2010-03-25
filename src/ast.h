@@ -56,7 +56,6 @@ private:
     std::string name;
     std::string type; /* FIXME: Not implemented yet */
 
-
 public:
     ExprAST *value_ast;
     Value *getValue() { return this->value_ast->Codegen(); }
@@ -75,7 +74,14 @@ public:
     op(_op), LHS(_lhs), RHS(_rhs) {};
     virtual Value *Codegen();
 };
- 
+
+
+class VoidExprAST: public ExprAST {
+public:
+    virtual Value *Codegen();
+};
+    
+
 
 /* Main Function AST, hold the others.
    since there is no concept of functions.
