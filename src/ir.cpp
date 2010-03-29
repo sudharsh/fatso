@@ -39,7 +39,6 @@ int main() {
     BasicBlock *bblock = BasicBlock::Create(Context, "__main", mainFunction, 0);
 
     Builder.SetInsertPoint(bblock);
-    //Builder.Insert(CallIn
         
     //iplist<Instruction>
     try{
@@ -52,8 +51,7 @@ int main() {
         }
     }
     catch (ParserError *error) {
-        cout << "For fuck's sake" << endl;
-        cout << error->get_reason();
+        cout << "PARSE ERROR: " << error->get_reason() << endl;
     }
 
     Builder.CreateRetVoid();

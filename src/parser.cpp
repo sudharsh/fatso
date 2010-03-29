@@ -93,10 +93,10 @@ ExprAST* Parser::parse()
     switch(tok)
         {
         case Lexer::tok_eof:
-            break;
+            return NULL;
                 
         case Lexer::tok_end_program:
-            break; 
+            return NULL;
                 
         case Lexer::tok_number:
             /* Handle numbers */
@@ -122,7 +122,6 @@ ExprAST* Parser::parse()
             /*
               By this time VAR would gotten pushed to unknown_identifiers
             */
-            cout << "SymbolTable size: " << this->symtab.size() <<  endl;
             var = this->lexer->unknown_identifiers.top();
             this->lexer->unknown_identifiers.pop();
             return this->_do_variable_assignment(var);
