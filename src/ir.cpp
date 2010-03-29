@@ -45,12 +45,13 @@ int main() {
     while(ExprAST *ast = parser->parse())
     {
         cout << bblock->getInstList().empty() <<endl;
-        ast->Codegen()->dump();
-        Instruction *i = (Instruction *)ast->Codegen();
-        Builder.Insert(i);
+        //ast->Codegen()->dump();
+        //Instruction *i = (Instruction *)ast->Codegen();
+        //        Builder.Insert(i);
     }
 
     Builder.CreateRetVoid();
+    verifyFunction(*mainFunction);
     parser->module->dump();
     return 0;
 }

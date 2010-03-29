@@ -43,17 +43,11 @@ ExprAST* Parser::_do_variable_assignment(std::string variable_name)
     
     this->symtab[variable_name]->value_ast = value_ast;
     cout << variable_name << ":" << this->symtab[variable_name.c_str()] << endl;
-    this->symtab[variable_name]->Codegen()->dump();
     return value_ast;
 }
 
 
 ExprAST* Parser::check_symtab(std::string symbol) {
-    cout << "-----------" << endl;
-    cout << "Symtab address in check_symtab: " << &this->symtab << endl;
-    cout << "Checking for " << symbol << " in the symtab, Count:" << this->symtab.count(symbol) << endl;
-    cout << "Symtab size in check_symtab: " << this->symtab.size() << endl;
-    cout << "-----------" << endl;
     if(this->symtab.count(symbol) >= 1) 
         return this->symtab[symbol];
     return NULL;
@@ -87,7 +81,6 @@ std::string Parser::getCurrentLexeme(void)
 
 ExprAST* Parser::parse()
 {
-    cout << "ready> ";
 
     try {
         int tok = this->getNextToken();
@@ -147,42 +140,26 @@ ExprAST* Parser::parse()
                     throw "Invalid BinOp statement. Expected OF";
                 
                 /* Get LHS */
-                this->getNextToken();
-                lhs = this->getCurrentLexeme();
-                if(!check_symtab(lhs))
-                    throw "Invalid LHS variable: " + lhs;
-                LHS = this->symtab[lhs];
-                
+                LHS = this->parse();
                 this->getNextToken(); /* Consume 'AN' */
                 if(this->getCurrentLexeme() != "AN") 
                     throw "Invalid BinOp statement. Expected AN";
                 
                 /* Get RHS */
-                this->getNextToken();
-                rhs = this->getCurrentLexeme();
-                if(!check_symtab(rhs))
-                    throw "Invalid RHS variable: " + rhs;
-                RHS = this->symtab[rhs];
+                RHS = this->parse();
                 binop = new BinaryExprAST(binary_op, LHS, RHS);
-                binop->Codegen()->dump();
                 return binop;
                 
                 
             default:
                 std::string lexeme = this->getCurrentLexeme();
                 /* check if current lexeme is in the symtab
-                   and do variable assignment if necessary
+                   and return the node if it is. Otherwise
                 */
-                cout << "Size of Symtab: before check_symtab call: " << this->symtab.size() << endl;
-                cout << "Address -->" << &this->symtab << endl;
-                cout << "Variables" << endl;
-                for(map<std::string, VariableExprAST *>::const_iterator it = this->symtab.begin();
-                    it != this->symtab.end();
-                    ++it)
-                    cout << it->first << endl;
-                
-                if(this->check_symtab(lexeme))
-                    return this->parse();
+                if(ExprAST *known_symbol = this->check_symtab(lexeme)) {
+                    cout << lexeme << " seems to be a variable" << endl;
+                    return known_symbol;
+                }
                 break;
 
         }
