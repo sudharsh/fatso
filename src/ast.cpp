@@ -47,8 +47,6 @@ Value *BinaryExprAST::Codegen() {
     if (op == "PRODUCT") return Builder.CreateMul(L, R, "multmp");
     if (op == "QUOSHUNT") return Builder.CreateFDiv(L, R, "divtmp");
         
-    throw "Invalid Binary Operator";
-  
 }
 
 

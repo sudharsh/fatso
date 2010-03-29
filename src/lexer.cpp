@@ -38,8 +38,8 @@ std::string Lexer::get_current_identifier() {
     return this->identifier;
 }
 
-int Lexer::get_lines_count() {
-    return this->lines;
+int Lexer::get_lineno() {
+    return this->lines + 1;
 }
 
 
@@ -66,10 +66,11 @@ int Lexer::get_token()
     
     /* Ignore whitespace */
     while(isspace(this->last_char)) {
-        if (this->last_char == '\n' || this->last_char == '\r')
-            this->lines++;
         this->consume_char();
     }
+
+    this->lines++;
+    
     /* Track the last known ascii character before consuming the other chars */
     int _char = this->last_char;
     get_next_identifier();

@@ -39,8 +39,7 @@ ExprAST* Parser::_do_variable_assignment(std::string variable_name)
     /* Get the value and put it in the symbol table */
     ExprAST *value_ast = this->parse();
     if (!value_ast) 
-        throw "Invalid type declaration";
-    
+        throw new ParserError("valid type declaration", this->lexer->get_lineno());
     this->symtab[variable_name]->value_ast = value_ast;
     cout << variable_name << ":" << this->symtab[variable_name.c_str()] << endl;
     return value_ast;
@@ -63,7 +62,7 @@ int Parser::getNextToken(void)
     if (this->start_program) {
         int _first = this->lexer->get_token();
         if (_first != Lexer::tok_start_program)
-            throw "Program should start with 'HAI'. Got " + this->getCurrentLexeme();
+            throw new ParserError("Program should start with 'HAI'. Got " + this->getCurrentLexeme(), this->lexer->get_lineno());
         this->start_program = false;
     }
 
@@ -82,94 +81,89 @@ std::string Parser::getCurrentLexeme(void)
 ExprAST* Parser::parse()
 {
 
-    try {
-        int tok = this->getNextToken();
+    int tok = this->getNextToken();
+    
+    cout << endl << "Parsing " << this->getCurrentLexeme() << endl;
+    std::string var;
 
-        cout << endl << "Parsing " << this->getCurrentLexeme() << endl;
-        std::string var;
-
-        /* For binops */
-        std::string lhs, rhs;
-        std::string binary_op;
+    /* For binops */
+    std::string lhs, rhs;
+    std::string binary_op;
         
-        switch(tok)
+    switch(tok)
         {
-            case Lexer::tok_eof:
-                break;
+        case Lexer::tok_eof:
+            break;
                 
-            case Lexer::tok_end_program:
-                break; 
+        case Lexer::tok_end_program:
+            break; 
                 
-            case Lexer::tok_number:
-                /* Handle numbers */
-                return this->_handle_number();
+        case Lexer::tok_number:
+            /* Handle numbers */
+            return this->_handle_number();
 
                 
-            case Lexer::tok_var_decl:
-                this->getNextToken();
-                var = this->getCurrentLexeme();
-                cout << "Declaring variable " << this->getCurrentLexeme() << endl;                                
-                if(this->check_symtab(var)) {
-                    cout << "Re-assigning" << endl;
-                    delete this->symtab[var] ;
-                }
+        case Lexer::tok_var_decl:
+            this->getNextToken();
+            var = this->getCurrentLexeme();
+            cout << "Declaring variable " << this->getCurrentLexeme() << endl;                                
+            if(this->check_symtab(var)) {
+                cout << "Re-assigning" << endl;
+                delete this->symtab[var] ;
+            }
                 
-                this->symtab[var] = new VariableExprAST(var);
-                this->symtab[var]->value_ast = new VoidExprAST(); 
-                cout << "Symtab size after declaring " << var.c_str() << " : " << this->symtab.size() << endl;
-                return this->symtab[var];
+            this->symtab[var] = new VariableExprAST(var);
+            this->symtab[var]->value_ast = new VoidExprAST(); 
+            cout << "Symtab size after declaring " << var.c_str() << " : " << this->symtab.size() << endl;
+            return this->symtab[var];
 
                 
-            case Lexer::tok_assignment:
-                /*
-                  By this time VAR would gotten pushed to unknown_identifiers
-                */
-                cout << "SymbolTable size: " << this->symtab.size() <<  endl;
-                var = this->lexer->unknown_identifiers.top();
-                this->lexer->unknown_identifiers.pop();
-                return this->_do_variable_assignment(var);
+        case Lexer::tok_assignment:
+            /*
+              By this time VAR would gotten pushed to unknown_identifiers
+            */
+            cout << "SymbolTable size: " << this->symtab.size() <<  endl;
+            var = this->lexer->unknown_identifiers.top();
+            this->lexer->unknown_identifiers.pop();
+            return this->_do_variable_assignment(var);
 
 
-            case Lexer::tok_binop:
-                binary_op = getCurrentLexeme();
-                ExprAST *LHS, *RHS;
-                BinaryExprAST *binop;
+        case Lexer::tok_binop:
+            binary_op = getCurrentLexeme();
+            ExprAST *LHS, *RHS;
+            BinaryExprAST *binop;
                 
-                this->getNextToken(); /* Consume 'OF' */
-                if(this->getCurrentLexeme() != "OF") 
-                    throw "Invalid BinOp statement. Expected OF";
+            this->getNextToken(); /* Consume 'OF' */
+            if(this->getCurrentLexeme() != "OF") 
+                throw new ParserError("Invalid BinOp statement. Expected OF", this->lexer->get_lineno());
                 
-                /* Get LHS */
-                LHS = this->parse();
-                this->getNextToken(); /* Consume 'AN' */
-                if(this->getCurrentLexeme() != "AN") 
-                    throw "Invalid BinOp statement. Expected AN";
+            /* Get LHS */
+            LHS = this->parse();
+            this->getNextToken(); /* Consume 'AN' */
+            if(this->getCurrentLexeme() != "AN") 
+                throw new ParserError("Invalid BinOp statement. Expected AN", this->lexer->get_lineno());
                 
-                /* Get RHS */
-                RHS = this->parse();
-                binop = new BinaryExprAST(binary_op, LHS, RHS);
-                return binop;
+            /* Get RHS */
+            RHS = this->parse();
+            binop = new BinaryExprAST(binary_op, LHS, RHS);
+            if (!binop)
+                throw new ParserError("Invalid Operation.", this->lexer->get_lineno());
+            return binop;
                 
                 
-            default:
-                std::string lexeme = this->getCurrentLexeme();
-                /* check if current lexeme is in the symtab
-                   and return the node if it is. Otherwise
-                */
-                if(ExprAST *known_symbol = this->check_symtab(lexeme)) {
-                    cout << lexeme << " seems to be a variable" << endl;
-                    return known_symbol;
-                }
-                break;
+        default:
+            std::string lexeme = this->getCurrentLexeme();
+            /* check if current lexeme is in the symtab
+               and return the node if it is. Otherwise
+            */
+            if(ExprAST *known_symbol = this->check_symtab(lexeme)) {
+                cout << lexeme << " seems to be a variable" << endl;
+                return known_symbol;
+            }
+            break;
 
         }
-        cout << "Last Token :" << tok << endl;
-        cout << "Last Lexeme :" << this->getCurrentLexeme() << endl;
-
-    }
-    catch(std::string traceback) {
-        cout << "Parser Error: " << traceback << endl;
-    }
-    return NULL;
+    
+    throw new ParserError("Unknown token: " + this->getCurrentLexeme(), this->lexer->get_lineno());
     
 }

@@ -42,12 +42,18 @@ int main() {
     //Builder.Insert(CallIn
         
     //iplist<Instruction>
-    while(ExprAST *ast = parser->parse())
-    {
-        cout << bblock->getInstList().empty() <<endl;
-        //ast->Codegen()->dump();
-        //Instruction *i = (Instruction *)ast->Codegen();
-        //        Builder.Insert(i);
+    try{
+        while(ExprAST *ast = parser->parse())
+        {
+            cout << bblock->getInstList().empty() <<endl;
+            //ast->Codegen()->dump();
+            //Instruction *i = (Instruction *)ast->Codegen();
+            //        Builder.Insert(i);
+        }
+    }
+    catch (ParserError *error) {
+        cout << "For fuck's sake" << endl;
+        cout << error->get_reason();
     }
 
     Builder.CreateRetVoid();

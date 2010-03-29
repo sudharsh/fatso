@@ -56,4 +56,17 @@ public:
     }
 };
 
+
+class ParserError
+{
+    
+ private:
+    string reason;
+    int line; /* FIXME: Add column information as well? */
+    
+ public:
+    string get_reason() { return this->line + ": " + this->reason; }
+    ParserError(string _reason, int _line): reason(_reason), line(_line) {};
+};
+
 #endif

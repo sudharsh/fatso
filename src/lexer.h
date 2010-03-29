@@ -66,8 +66,10 @@ public:
     int get_token();
     /* Get current lexeme. Note that this DOES NOT consume characters. */
     std::string get_current_identifier();
-    /* Return the number of lines (newlines '\n' and carriage feed '\r' */
-    int get_lines_count();
+    /* Return the number of lines (newlines '\n' and carriage feed '\r'
+       consumed so far
+     */
+    int get_lineno();
     /* Check if the lexeme is a binary operator */
     bool is_binary_op(std::string lexeme);
       
