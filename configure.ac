@@ -1,4 +1,4 @@
-AC_INIT([fatso], [0.1.0], [sudharsh@gmail.com], [fatsox])
+AC_INIT([fatso], [0.1.0], [sudharsh@gmail.com], [fatso])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([dist-bzip2])
