@@ -20,6 +20,7 @@
 #define FATSO_AST_H
 
 #include <iostream>
+#include <sstream>
 #include <cstdio>
 #include <map>
 #include "llvm/DerivedTypes.h"
@@ -38,6 +39,7 @@ class ExprAST {
 public:
     virtual ~ExprAST() {}
     virtual Value *Codegen() = 0;
+    virtual std::string getNodeType() = 0;
 };
 
 
@@ -45,7 +47,12 @@ class NumberExprAST: public ExprAST {
 private:
     double val;
 public:
-    double get_val() { return this->val; }
+    //double get_val() { return this->val; }
+    virtual std::string getNodeType() {
+        std::ostringstream o;
+        o << this->val;
+        return o.str();
+    }
     NumberExprAST(double _val) : val(_val) {}
     virtual Value *Codegen();
 };
@@ -59,7 +66,9 @@ private:
 public:
     ExprAST *value_ast;
     Value *getValue() { return this->value_ast->Codegen(); }
-        
+    virtual std::string getNodeType() {
+        return "VARIABLE holding " + this->value_ast->getNodeType();
+    }
     VariableExprAST(std::string _name): name(_name) {}
     virtual Value *Codegen();
 };
@@ -73,12 +82,15 @@ public:
     BinaryExprAST(std::string _op, ExprAST *_lhs, ExprAST *_rhs):
     op(_op), LHS(_lhs), RHS(_rhs) {};
     virtual Value *Codegen();
+    virtual std::string getNodeType() { return "BINARY Expression holding " + this->LHS->getNodeType() + " and " \
+            + this->RHS->getNodeType(); }
 };
 
 
 class VoidExprAST: public ExprAST {
 public:
     virtual Value *Codegen();
+    virtual std::string getNodeType() { return "VOID Node"; }
 };
     
 

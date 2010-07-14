@@ -41,7 +41,8 @@ ExprAST* Parser::_do_variable_assignment(std::string variable_name)
     if (!value_ast) 
         throw new ParserError("valid type declaration", this->lexer->get_lineno());
     this->symtab[variable_name]->value_ast = value_ast;
-    cout << variable_name << ":" << this->symtab[variable_name.c_str()] << endl;
+    cout << variable_name << "::" << this->symtab[variable_name.c_str()]->Codegen() << endl;
+    cout << this->symtab[variable_name]->getNodeType() << endl; 
     return value_ast;
 }
 
