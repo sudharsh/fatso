@@ -29,17 +29,15 @@
 using namespace std;
 using namespace llvm;
 
-IRBuilder<> Builder(getGlobalContext());
 
-
-Value *NumberExprAST::Codegen() {
+Value *NumberExprAST::Codegen(IRBuilder<> Builder) {
     return ConstantFP::get(getGlobalContext(), APFloat(val));
 }
 
 
-Value *BinaryExprAST::Codegen() {
-    Value *L = LHS->Codegen();
-    Value *R = RHS->Codegen();
+Value *BinaryExprAST::Codegen(IRBuilder<> Builder) {
+    Value *L = LHS->Codegen(Builder);
+    Value *R = RHS->Codegen(Builder);
     if (L == 0 || R == 0) return 0;
     
     if (op == "SUM") return Builder.CreateAdd(L, R, "addtmp");
@@ -50,14 +48,15 @@ Value *BinaryExprAST::Codegen() {
 }
 
 
-Value *VoidExprAST::Codegen() {
+Value *VoidExprAST::Codegen(IRBuilder<> Builder) {
     // FIXME: This should return a true Void ast type
     NumberExprAST *ast = new NumberExprAST(0);
-    return ast->Codegen();
+    return ast->Codegen(Builder);
 }
 
 
-Value *VariableExprAST::Codegen() {
+Value *VariableExprAST::Codegen(IRBuilder<> Builder) {
     /* Check the symbol table */
-    return this->getValue();
+    Value *var = Builder.CreateAlloca(Type::getDoubleTy(getGlobalContext()), 0, this->value_ast->getNodeType());
+    return Builder.CreateStore(this->value_ast->Codegen(Builder), var);    
 }

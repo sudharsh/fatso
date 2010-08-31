@@ -24,38 +24,38 @@ using namespace llvm;
 
 int main() {
     LLVMContext &Context = getGlobalContext();
+    cout << &Context << endl;
+    cout << &getGlobalContext() << endl;
     IRBuilder<> Builder(Context);
     
-    Parser *parser = new Parser();
-    parser->module = new Module("FATSO JIT", Context);
+    Parser *parser = new Parser("MAIN", Context);
 
     /* The main() for LOLCODE
      */
 
     /* Create the top level interpreter function to call as entry */
-    
-    FunctionType *ftype = FunctionType::get(Type::getVoidTy(Context), false);
-    Function *mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage, "main", parser->module);
+    FunctionType *ftype = FunctionType::get(Type::getDoubleTy(Context), false);
+    Function *mainFunction = Function::Create(ftype, GlobalValue::ExternalLinkage, "main", parser->module);
     BasicBlock *bblock = BasicBlock::Create(Context, "__main", mainFunction, 0);
 
     Builder.SetInsertPoint(bblock);
         
     //iplist<Instruction>
     try{
-        while(ExprAST *ast = parser->parse())
+        while(ExprAST *ast = parser->parse(Builder))
         {
-            //cout << bblock->getInstList().empty() <<endl;
-            //ast->Codegen()->dump();
-            //Instruction *i = (Instruction *)ast->Codegen();
-            //        Builder.Insert(i);
+            Instruction *i = cast<Instruction>(ast->Codegen(Builder));
+            bblock->getInstList().push_back(i);
+            //ast->Codegen(Builder)->dump();
         }
     }
     catch (ParserError *error) {
         cout << "PARSE ERROR: " << error->get_reason() << endl;
     }
 
+    ExprAST *ret = new NumberExprAST(0);
     Builder.CreateRetVoid();
-    verifyFunction(*mainFunction);
+    //verifyFunction(*mainFunction);
     parser->module->dump();
     return 0;
 }

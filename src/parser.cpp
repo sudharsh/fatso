@@ -34,14 +34,14 @@ NumberExprAST * Parser::_handle_number()
 }
 
 
-ExprAST* Parser::_do_variable_assignment(std::string variable_name)
+ExprAST* Parser::_do_variable_assignment(std::string variable_name, IRBuilder<> Builder)
 {
     /* Get the value and put it in the symbol table */
-    ExprAST *value_ast = this->parse();
+    ExprAST *value_ast = this->parse(Builder);
     if (!value_ast) 
         throw new ParserError("valid type declaration", this->lexer->get_lineno());
     this->symtab[variable_name]->value_ast = value_ast;
-    cout << variable_name << "::" << this->symtab[variable_name.c_str()]->Codegen() << endl;
+    cout << variable_name << "::" << this->symtab[variable_name.c_str()]->Codegen(Builder) << endl;
     cout << this->symtab[variable_name]->getNodeType() << endl; 
     return value_ast;
 }
@@ -79,7 +79,7 @@ std::string Parser::getCurrentLexeme(void)
 }
 
 
-ExprAST* Parser::parse()
+ExprAST* Parser::parse(IRBuilder<> Builder)
 {
 
     int tok = this->getNextToken();
@@ -125,7 +125,7 @@ ExprAST* Parser::parse()
             */
             var = this->lexer->unknown_identifiers.top();
             this->lexer->unknown_identifiers.pop();
-            return this->_do_variable_assignment(var);
+            return this->_do_variable_assignment(var, Builder);
 
 
         case Lexer::tok_binop:
@@ -138,13 +138,13 @@ ExprAST* Parser::parse()
                 throw new ParserError("Invalid BinOp statement. Expected OF", this->lexer->get_lineno());
                 
             /* Get LHS */
-            LHS = this->parse();
+            LHS = this->parse(Builder);
             this->getNextToken(); /* Consume 'AN' */
             if(this->getCurrentLexeme() != "AN") 
                 throw new ParserError("Invalid BinOp statement. Expected AN", this->lexer->get_lineno());
                 
             /* Get RHS */
-            RHS = this->parse();
+            RHS = this->parse(Builder);
             binop = new BinaryExprAST(binary_op, LHS, RHS);
             if (!binop)
                 throw new ParserError("Invalid Operation.", this->lexer->get_lineno());
@@ -158,7 +158,7 @@ ExprAST* Parser::parse()
             */
             if(ExprAST *known_symbol = this->check_symtab(lexeme)) {
                 cout << lexeme << " seems to be a variable" << endl;
-                return known_symbol;
+                this->parse(Builder);
             }
             break;
 

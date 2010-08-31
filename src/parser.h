@@ -26,7 +26,6 @@
 #include "ast.h"
 
 using namespace std;
-using namespace llvm;
 
 class Parser
 {
@@ -34,26 +33,29 @@ private:
     Lexer *lexer;
     bool start_program;
     map<std::string, VariableExprAST *> symtab; /* FIXME: Deprecated
-                                            Rudimentary symbol table */
+                                                   Rudimentary symbol table */
     /* Handle each type of expression separately */
     VariableExprAST *_handle_variable_declaration();
     NumberExprAST *_handle_number();
 
-    ExprAST* _do_variable_assignment(std::string);
+    ExprAST* _do_variable_assignment(std::string, IRBuilder<> Builder);
         
 public:
     Module *module;
-       
+    
     int getNextToken();
     std::string getCurrentLexeme();
     ExprAST* check_symtab(std::string);
+    ExprAST* parse(IRBuilder<> Builder);
 
-    ExprAST* parse();
-           
-    Parser ()  {
-        this->start_program = true;
+    /* TODO: Pass context as an optional param? */
+    Parser(string module_id, LLVMContext &Context = getGlobalContext())
+    {
+        this->module = new Module(module_id, Context);
         this->lexer = new Lexer();
+        this->start_program = true;
     }
+        
 };
 
 

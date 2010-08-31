@@ -38,7 +38,7 @@ using namespace llvm;
 class ExprAST {
 public:
     virtual ~ExprAST() {}
-    virtual Value *Codegen() = 0;
+    virtual Value *Codegen(IRBuilder<> Builder) = 0;
     virtual std::string getNodeType() = 0;
 };
 
@@ -54,7 +54,7 @@ public:
         return o.str();
     }
     NumberExprAST(double _val) : val(_val) {}
-    virtual Value *Codegen();
+    virtual Value *Codegen(IRBuilder<> Builder);
 };
 
 
@@ -65,12 +65,11 @@ private:
 
 public:
     ExprAST *value_ast;
-    Value *getValue() { return this->value_ast->Codegen(); }
     virtual std::string getNodeType() {
         return "VARIABLE holding " + this->value_ast->getNodeType();
     }
     VariableExprAST(std::string _name): name(_name) {}
-    virtual Value *Codegen();
+    virtual Value *Codegen(IRBuilder<> Builder);
 };
 
 
@@ -81,7 +80,7 @@ private:
 public:
     BinaryExprAST(std::string _op, ExprAST *_lhs, ExprAST *_rhs):
     op(_op), LHS(_lhs), RHS(_rhs) {};
-    virtual Value *Codegen();
+    virtual Value *Codegen(IRBuilder<> Builder);
     virtual std::string getNodeType() { return "BINARY Expression holding " + this->LHS->getNodeType() + " and " \
             + this->RHS->getNodeType(); }
 };
@@ -89,7 +88,7 @@ public:
 
 class VoidExprAST: public ExprAST {
 public:
-    virtual Value *Codegen();
+    virtual Value *Codegen(IRBuilder<> Builder);
     virtual std::string getNodeType() { return "VOID Node"; }
 };
     
@@ -103,7 +102,7 @@ class MainFunction {
 private:
     ExprAST *body;
 public:
-    Function *Codegen();
+    Function *Codegen(IRBuilder<> Builder);
 };    
 
 
