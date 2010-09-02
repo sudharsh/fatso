@@ -68,6 +68,6 @@ Value *VariableExprAST::Codegen(IRBuilder<> Builder) {
         return ptr;
     }
     
-    return Builder.CreateStore(this->value_ast->Codegen(Builder), this->data_ptr);
-    //return Builder.CreateLoad(this->data_ptr, this->name);
+    Builder.CreateStore(this->value_ast->Codegen(Builder), this->data_ptr);
+    return Builder.CreateLoad(this->data_ptr, this->name);
 }

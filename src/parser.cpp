@@ -41,7 +41,7 @@ ExprAST* Parser::_do_variable_assignment(std::string variable_name, IRBuilder<> 
     if (!value_ast) 
         throw new ParserError("valid type declaration", this->lexer->get_lineno());
     this->symtab[variable_name]->value_ast = value_ast;
-    cout << this->symtab[variable_name]->getNodeType() << endl; 
+    cout << this->symtab[variable_name]->getNodeRepr() << endl; 
     return this->symtab[variable_name];
 }
 
@@ -141,7 +141,7 @@ ExprAST* Parser::parse(IRBuilder<> Builder)
                 throw new ParserError("Invalid BinOp statement. Expected OF", this->lexer->get_lineno());
                 
             /* Get LHS */
-            LHS = this->parse(Builder);
+            LHS = this->parse(Builder); 
             this->getNextToken(); /* Consume 'AN' */
             if(this->getCurrentLexeme() != "AN") 
                 throw new ParserError("Invalid BinOp statement. Expected AN", this->lexer->get_lineno());
@@ -161,12 +161,12 @@ ExprAST* Parser::parse(IRBuilder<> Builder)
             */
             if(ExprAST *known_symbol = this->check_symtab(lexeme)) {
                 cout << lexeme << " seems to be a variable" << endl;
-                this->parse(Builder);
+                return this->symtab[lexeme];
             }
             break;
 
         }
     
-    throw new ParserError("Unknown token: " + this->getCurrentLexeme(), this->lexer->get_lineno());
+    throw new ParserError("Unknown token: " + this->getCurrentLexeme() + ":::", this->lexer->get_lineno());
     
 }

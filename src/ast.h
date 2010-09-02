@@ -39,7 +39,7 @@ class ExprAST {
 public:
     virtual ~ExprAST() {}
     virtual Value *Codegen(IRBuilder<> Builder) = 0;
-    virtual std::string getNodeType() = 0;
+    virtual std::string getNodeRepr() = 0;
     //  virtual double getNodeValue(); /* Bring in Fatso's own typing later */
 };
 
@@ -49,7 +49,7 @@ private:
     double val;
 public:
     //double get_val() { return this->val; }
-    std::string getNodeType() {
+    std::string getNodeRepr() {
         std::ostringstream o;
         o << this->val;
         return o.str();
@@ -70,8 +70,8 @@ private:
     
 public:
     ExprAST *value_ast;
-    std::string getNodeType() {
-        return "VARIABLE holding " + this->value_ast->getNodeType();
+    std::string getNodeRepr() {
+        return "VARIABLE holding " + this->value_ast->getNodeRepr();
     }
     std::string getVarName() {
         return this->name;
@@ -96,15 +96,15 @@ public:
     BinaryExprAST(std::string _op, ExprAST *_lhs, ExprAST *_rhs):
     op(_op), LHS(_lhs), RHS(_rhs) {};
     Value *Codegen(IRBuilder<> Builder);
-    std::string getNodeType() { return "BINARY Expression holding " + this->LHS->getNodeType() + " and " \
-            + this->RHS->getNodeType(); }
+    std::string getNodeRepr() { return "BINARY Expression holding " + this->LHS->getNodeRepr() + " and " \
+            + this->RHS->getNodeRepr(); }
 };
 
 
 class VoidExprAST: public ExprAST {
 public:
     Value *Codegen(IRBuilder<> Builder);
-    std::string getNodeType() { return "VOID Node"; }
+    std::string getNodeRepr() { return "VOID Node"; }
 };
     
 
