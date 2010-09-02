@@ -40,6 +40,7 @@ public:
     virtual ~ExprAST() {}
     virtual Value *Codegen(IRBuilder<> Builder) = 0;
     virtual std::string getNodeType() = 0;
+    //  virtual double getNodeValue(); /* Bring in Fatso's own typing later */
 };
 
 
@@ -48,13 +49,14 @@ private:
     double val;
 public:
     //double get_val() { return this->val; }
-    virtual std::string getNodeType() {
+    std::string getNodeType() {
         std::ostringstream o;
         o << this->val;
         return o.str();
     }
+
     NumberExprAST(double _val) : val(_val) {}
-    virtual Value *Codegen(IRBuilder<> Builder);
+    Value *Codegen(IRBuilder<> Builder);
 };
 
 
@@ -62,14 +64,27 @@ class VariableExprAST: public ExprAST {
 private:
     std::string name;
     std::string type; /* FIXME: Not implemented yet */
-
+    
+    int read_count;
+    llvm::Value *data_ptr; /* Caveat. This just points to the data. Use Codegen to access the actual Value */
+    
 public:
     ExprAST *value_ast;
-    virtual std::string getNodeType() {
+    std::string getNodeType() {
         return "VARIABLE holding " + this->value_ast->getNodeType();
     }
-    VariableExprAST(std::string _name): name(_name) {}
-    virtual Value *Codegen(IRBuilder<> Builder);
+    std::string getVarName() {
+        return this->name;
+    }
+    llvm::Value* getDataPtr() {
+        return this->data_ptr;
+    }
+    void setDataPtr(llvm::Value *_value) {
+        this->data_ptr = _value;
+    }
+    
+ VariableExprAST(std::string _name): name(_name), read_count(0), data_ptr(NULL) {}
+    Value *Codegen(IRBuilder<> Builder);
 };
 
 
@@ -80,16 +95,16 @@ private:
 public:
     BinaryExprAST(std::string _op, ExprAST *_lhs, ExprAST *_rhs):
     op(_op), LHS(_lhs), RHS(_rhs) {};
-    virtual Value *Codegen(IRBuilder<> Builder);
-    virtual std::string getNodeType() { return "BINARY Expression holding " + this->LHS->getNodeType() + " and " \
+    Value *Codegen(IRBuilder<> Builder);
+    std::string getNodeType() { return "BINARY Expression holding " + this->LHS->getNodeType() + " and " \
             + this->RHS->getNodeType(); }
 };
 
 
 class VoidExprAST: public ExprAST {
 public:
-    virtual Value *Codegen(IRBuilder<> Builder);
-    virtual std::string getNodeType() { return "VOID Node"; }
+    Value *Codegen(IRBuilder<> Builder);
+    std::string getNodeType() { return "VOID Node"; }
 };
     
 

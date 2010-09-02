@@ -41,9 +41,8 @@ ExprAST* Parser::_do_variable_assignment(std::string variable_name, IRBuilder<> 
     if (!value_ast) 
         throw new ParserError("valid type declaration", this->lexer->get_lineno());
     this->symtab[variable_name]->value_ast = value_ast;
-    cout << variable_name << "::" << this->symtab[variable_name.c_str()]->Codegen(Builder) << endl;
     cout << this->symtab[variable_name]->getNodeType() << endl; 
-    return value_ast;
+    return this->symtab[variable_name];
 }
 
 
@@ -90,7 +89,7 @@ ExprAST* Parser::parse(IRBuilder<> Builder)
     /* For binops */
     std::string lhs, rhs;
     std::string binary_op;
-        
+
     switch(tok)
         {
         case Lexer::tok_eof:
@@ -105,20 +104,24 @@ ExprAST* Parser::parse(IRBuilder<> Builder)
 
                 
         case Lexer::tok_var_decl:
+
+            ExprAST *void_ast;
+            void_ast = new VoidExprAST();
+            
             this->getNextToken();
             var = this->getCurrentLexeme();
             cout << "Declaring variable " << this->getCurrentLexeme() << endl;                                
             if(this->check_symtab(var)) {
                 cout << "Re-assigning" << endl;
-                delete this->symtab[var] ;
+                delete this->symtab[var];
+                this->symtab[var] = new VariableExprAST(var);
             }
-                
+            
             this->symtab[var] = new VariableExprAST(var);
-            this->symtab[var]->value_ast = new VoidExprAST(); 
+            this->symtab[var]->value_ast = void_ast;
             cout << "Symtab size after declaring " << var.c_str() << " : " << this->symtab.size() << endl;
             return this->symtab[var];
 
-                
         case Lexer::tok_assignment:
             /*
               By this time VAR would gotten pushed to unknown_identifiers

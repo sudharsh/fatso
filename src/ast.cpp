@@ -23,6 +23,7 @@
 #include "llvm/Module.h"
 #include "llvm/LLVMContext.h"
 #include "llvm/Support/IRBuilder.h"
+
 #include "ast.h"
 #include "parser.h"
 
@@ -57,6 +58,16 @@ Value *VoidExprAST::Codegen(IRBuilder<> Builder) {
 
 Value *VariableExprAST::Codegen(IRBuilder<> Builder) {
     /* Check the symbol table */
-    Value *var = Builder.CreateAlloca(Type::getDoubleTy(getGlobalContext()), 0, this->value_ast->getNodeType());
-    return Builder.CreateStore(this->value_ast->Codegen(Builder), var);    
+    cout << this->name << endl;
+    this->read_count++;
+
+    /* Variable declaration and definition are represented by the same node for now */
+    if (this->read_count == 1) {
+        llvm::Value *ptr = Builder.CreateAlloca(Type::getDoubleTy(getGlobalContext()), this->value_ast->Codegen(Builder), this->name);
+        this->setDataPtr(ptr);
+        return ptr;
+    }
+    
+    return Builder.CreateStore(this->value_ast->Codegen(Builder), this->data_ptr);
+    //return Builder.CreateLoad(this->data_ptr, this->name);
 }
